@@ -6,18 +6,28 @@
   <title>Dictio Pipeline</title>
   <style>
     :root {
-      --bg: #f4efe6;
-      --panel: #fffaf2;
-      --ink: #1c1a17;
-      --muted: #6a6258;
-      --line: #d8ccba;
-      --accent: #0f766e;
-      --accent-soft: #d9f3f0;
-      --danger: #b42318;
-      --danger-soft: #fbe9e7;
-      --warn: #b7791f;
-      --warn-soft: #fff4df;
-      --shadow: 0 18px 40px rgba(80, 61, 34, 0.12);
+      --bg: #f5efea;
+      --bg-alt: #edf4f0;
+      --panel: rgba(255, 250, 246, 0.88);
+      --panel-soft: rgba(250, 244, 239, 0.92);
+      --surface: #fffaf6;
+      --surface-soft: #f6efe9;
+      --ink: #2f2925;
+      --muted: #746b63;
+      --line: #ddd0c5;
+      --accent: #6b978f;
+      --accent-strong: #567e77;
+      --accent-soft: #e5f1ed;
+      --accent-softer: #f1f7f4;
+      --danger: #b56b72;
+      --danger-soft: #f9ebed;
+      --warn: #b39266;
+      --warn-soft: #faf1e3;
+      --powder: #edf3f8;
+      --blush: #f7eef2;
+      --sage: #eef5ef;
+      --lavender: #f5f1f8;
+      --shadow: 0 18px 40px rgba(121, 100, 82, 0.10);
     }
 
     * { box-sizing: border-box; }
@@ -31,8 +41,8 @@
       font-family: Georgia, "Times New Roman", serif;
       color: var(--ink);
       background:
-        radial-gradient(circle at top left, rgba(15, 118, 110, 0.12), transparent 28%),
-        linear-gradient(180deg, #f6f1e8 0%, var(--bg) 100%);
+        radial-gradient(circle at top left, rgba(255, 248, 242, 0.95), transparent 42%),
+        linear-gradient(180deg, var(--bg) 0%, var(--bg-alt) 55%, #f8f4ef 100%);
       min-height: 100vh;
     }
 
@@ -42,7 +52,7 @@
     }
 
     .hero, .panel {
-      background: rgba(255, 250, 242, 0.9);
+      background: var(--panel);
       border: 1px solid rgba(216, 204, 186, 0.92);
       box-shadow: var(--shadow);
       border-radius: 24px;
@@ -52,6 +62,7 @@
     .hero {
       padding: 28px;
       margin-bottom: 18px;
+      background: linear-gradient(180deg, #fdf7f2 0%, #eef4f7 100%);
     }
 
     h1, h2, h3, p { margin: 0; }
@@ -85,12 +96,12 @@
     }
 
     input {
-      background: #fffdf9;
+      background: rgba(255, 252, 248, 0.95);
       color: var(--ink);
     }
 
     button {
-      background: var(--accent);
+      background: var(--accent-strong);
       color: white;
       font-weight: 700;
       cursor: pointer;
@@ -140,6 +151,18 @@
       padding: 22px;
     }
 
+    .panel.resultado-normalizado {
+      background: linear-gradient(180deg, #f8fbfd 0%, var(--powder) 100%);
+    }
+
+    .panel.pipeline-section {
+      background: linear-gradient(180deg, #fff9fb 0%, var(--blush) 100%);
+    }
+
+    .rag-panel {
+      background: linear-gradient(180deg, #fbfdf9 0%, var(--sage) 100%);
+    }
+
     .stack {
       display: grid;
       gap: 14px;
@@ -157,7 +180,7 @@
       border: 1px solid var(--line);
       border-radius: 999px;
       padding: 8px 12px;
-      background: #fffdf9;
+      background: rgba(255, 251, 247, 0.9);
       color: var(--muted);
       font-size: 0.92rem;
     }
@@ -165,7 +188,7 @@
     .card {
       border: 1px solid var(--line);
       border-radius: 18px;
-      background: #fffdf9;
+      background: rgba(255, 249, 245, 0.88);
       padding: 16px;
     }
 
@@ -175,7 +198,7 @@
     }
 
     .card.fail {
-      border-color: rgba(180, 35, 24, 0.35);
+      border-color: rgba(181, 107, 114, 0.35);
       background: var(--danger-soft);
     }
 
@@ -196,7 +219,7 @@
       padding: 4px 10px;
       font-size: 0.8rem;
       font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
-      background: rgba(255, 255, 255, 0.8);
+      background: rgba(255, 250, 246, 0.86);
     }
 
     .source-strip {
@@ -210,7 +233,10 @@
       display: grid;
       gap: 18px;
       padding: 20px;
-      background: #ffffff;
+      background: linear-gradient(180deg, rgba(255, 250, 247, 0.96) 0%, rgba(242, 246, 250, 0.92) 100%);
+      border: 1px solid rgba(216, 204, 186, 0.92);
+      border-radius: 24px;
+      box-shadow: var(--shadow);
     }
 
     .summary-hero {
@@ -245,7 +271,7 @@
       border: 1px solid var(--line);
       border-radius: 999px;
       padding: 6px 10px;
-      background: rgba(255, 255, 255, 0.7);
+      background: rgba(255, 250, 246, 0.86);
       color: var(--muted);
       font-size: 0.86rem;
       font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
@@ -261,7 +287,7 @@
       border: 1px solid var(--line);
       border-radius: 16px;
       padding: 12px 14px;
-      background: rgba(255, 255, 255, 0.72);
+      background: rgba(255, 251, 248, 0.82);
     }
 
     .summary-meta-label {
@@ -303,7 +329,7 @@
     .etymology-box {
       border-left: 4px solid rgba(15, 118, 110, 0.35);
       padding: 12px 14px;
-      background: rgba(15, 118, 110, 0.06);
+      background: rgba(229, 241, 237, 0.9);
       border-radius: 0 14px 14px 0;
       line-height: 1.5;
     }
@@ -351,13 +377,13 @@
       border: 1px solid var(--line);
       border-radius: 999px;
       padding: 8px 12px;
-      background: rgba(255, 255, 255, 0.8);
+      background: rgba(255, 251, 247, 0.86);
       font-size: 0.92rem;
     }
 
     .source-pill {
       border: 1px solid var(--line);
-      background: #fffdf9;
+      background: rgba(255, 251, 247, 0.92);
       border-radius: 999px;
       padding: 8px 12px;
       font-size: 0.88rem;
@@ -380,6 +406,9 @@
       display: grid;
       gap: 10px;
       margin-top: 16px;
+      background: rgba(255, 251, 247, 0.7);
+      padding: 12px;
+      border-radius: 12px;
     }
 
     .quality-row {
@@ -396,7 +425,7 @@
 
     .quality-row.active {
       border-color: rgba(15, 118, 110, 0.3);
-      background: rgba(15, 118, 110, 0.06);
+      background: rgba(229, 241, 237, 0.88);
     }
 
     .quality-bar {
@@ -406,13 +435,13 @@
       border-radius: 999px;
       overflow: hidden;
       border: 1px solid var(--line);
-      background: rgba(255, 253, 249, 0.9);
+      background: rgba(255, 249, 244, 0.95);
     }
 
     .quality-bar > span {
       display: block;
       height: 100%;
-      background: linear-gradient(90deg, #1e7f75 0%, #80c7bc 100%);
+      background: linear-gradient(90deg, #6b978f 0%, #b8d7cf 100%);
     }
 
     .detail-line {
@@ -436,7 +465,7 @@
       border: 1px solid var(--line);
       border-radius: 999px;
       padding: 8px 12px;
-      background: #fffdf9;
+      background: rgba(255, 251, 247, 0.88);
       color: var(--muted);
       font-size: 0.9rem;
     }
@@ -447,7 +476,7 @@
 
     .inline-btn {
       border: 1px solid var(--line);
-      background: #fffdf9;
+      background: rgba(255, 251, 247, 0.9);
       color: var(--ink);
       min-width: auto;
       padding: 8px 12px;
@@ -469,7 +498,7 @@
     .rag-result {
       border: 1px solid var(--line);
       border-radius: 18px;
-      background: #fffdf9;
+      background: rgba(255, 251, 247, 0.92);
       padding: 14px 16px;
       cursor: pointer;
       transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
@@ -482,7 +511,7 @@
     }
 
     .rag-result.featured {
-      background: linear-gradient(180deg, #f7fffd 0%, #e6f7f3 100%);
+      background: linear-gradient(180deg, #fbfdfb 0%, var(--accent-soft) 100%);
       border-color: rgba(15, 118, 110, 0.35);
       box-shadow: inset 0 0 0 1px rgba(15, 118, 110, 0.12);
     }
@@ -494,7 +523,7 @@
       padding: 4px 10px;
       font-size: 0.78rem;
       font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
-      background: rgba(15, 118, 110, 0.1);
+      background: rgba(229, 241, 237, 0.96);
       color: #155e59;
     }
 
@@ -514,7 +543,7 @@
       margin: 0;
       white-space: pre-wrap;
       word-break: break-word;
-      background: #ffffff;
+      background: rgba(255, 251, 248, 0.92);
       color: var(--ink);
       border: 1px solid var(--line);
       border-radius: 18px;
@@ -567,7 +596,7 @@
     </section>
 
     <section class="grid">
-      <article class="panel stack">
+      <article class="panel stack resultado-normalizado">
         <div>
           <h2>Resultado normalizado</h2>
           <p class="muted">Camada consolidada para UI, debug e ingestao futura em RAG.</p>
@@ -584,7 +613,7 @@
         </div>
       </article>
 
-      <article class="panel stack">
+      <article class="panel stack pipeline-section">
         <div>
           <h2>Pipeline</h2>
           <p class="muted">Cada fonte mostra status, tempo, score e material coletado.</p>
