@@ -76,7 +76,7 @@
     .panel { padding: 22px; }
     .resultado-normalizado { background: linear-gradient(180deg, #f8fbfd 0%, var(--powder) 100%); }
     .pipeline-section { background: linear-gradient(180deg, #fff9fb 0%, var(--blush) 100%); }
-    .analogico-panel { --analog-text-columns: 2; background: linear-gradient(180deg, #fbf9fd 0%, #eef5ef 100%); }
+    .analogico-panel { --analog-text-columns: 8; background: linear-gradient(180deg, #fbf9fd 0%, #eef5ef 100%); }
     .section-intro, .stack { display: grid; gap: 12px; }
     .card, .summary-card, .analog-accordion {
       border: 1px solid var(--line); border-radius: 20px; background: var(--surface); box-shadow: var(--shadow-soft);
@@ -134,7 +134,7 @@
       margin: 0;
       padding-left: 22px;
       display: grid;
-      grid-template-columns: repeat(var(--analog-text-columns, 2), minmax(0, 1fr));
+      grid-template-columns: repeat(var(--analog-text-columns, 8), minmax(0, 1fr));
       column-gap: 22px;
       row-gap: 6px;
     }
@@ -704,6 +704,7 @@
       const result = payload.result;
       const debug = payload.debug;
       const orderedSenses = prioritizeAnalogSenses(result.senses, payload.input?.term || result.term);
+      applyAnalogTextColumns();
       renderAnalogicoEntry(payload.entry);
       analogicoSummaryEl.innerHTML = `
         <div class="summary-card">
@@ -844,6 +845,7 @@
         else fetchLexicon();
       }
     });
+    applyAnalogTextColumns();
   </script>
 </body>
 </html>
