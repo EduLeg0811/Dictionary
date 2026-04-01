@@ -6,795 +6,569 @@
   <title>Dictio Pipeline</title>
   <style>
     :root {
-      --bg: #f5efea;
-      --bg-alt: #edf4f0;
-      --panel: rgba(255, 250, 246, 0.88);
-      --surface: #ffffff;
-      --surface-soft: #fbf6f1;
-      --ink: #2f2925;
-      --muted: #746b63;
-      --line: #ddd0c5;
-      --accent: #6b978f;
-      --accent-strong: #567e77;
-      --accent-soft: #e5f1ed;
-      --accent-softer: #f3f8f5;
-      --danger: #b56b72;
-      --danger-soft: #f9ebed;
-      --warn: #b39266;
-      --warn-soft: #faf1e3;
-      --powder: #edf3f8;
-      --blush: #f7eef2;
-      --sage: #eef5ef;
-      --shadow: 0 18px 40px rgba(121, 100, 82, 0.10);
-      --shadow-soft: 0 10px 24px rgba(121, 100, 82, 0.08);
+      --bg: #f5efea; --bg-alt: #edf4f0; --panel: rgba(255,250,246,.9); --surface: #fff;
+      --ink: #2f2925; --muted: #746b63; --line: #ddd0c5; --accent: #6b978f; --accent-strong: #567e77;
+      --accent-soft: #e5f1ed; --powder: #edf3f8; --blush: #f7eef2; --sage: #eef5ef;
+      --danger-soft: #f9ebed; --warn-soft: #faf1e3; --shadow: 0 18px 40px rgba(121,100,82,.1);
+      --shadow-soft: 0 10px 24px rgba(121,100,82,.08);
     }
-
     * { box-sizing: border-box; }
-
-    html {
-      font-size: 15px;
-    }
-
     body {
-      margin: 0;
-      font-family: Georgia, "Times New Roman", serif;
-      color: var(--ink);
-      background:
-        radial-gradient(circle at top left, rgba(255, 248, 242, 0.95), transparent 42%),
+      margin: 0; color: var(--ink); font: 15px/1.5 Georgia, "Times New Roman", serif;
+      background: radial-gradient(circle at top left, rgba(255,248,242,.95), transparent 42%),
         linear-gradient(180deg, var(--bg) 0%, var(--bg-alt) 55%, #f8f4ef 100%);
       min-height: 100vh;
     }
-
-    .shell {
-      width: calc(100% - 48px);
-      margin: 32px auto 48px;
-    }
-
-    .hero, .panel {
-      background: var(--panel);
-      border: 1px solid rgba(221, 208, 197, 0.88);
-      box-shadow: var(--shadow);
-      border-radius: 24px;
-      backdrop-filter: blur(10px);
-    }
-
-    .hero {
-      position: relative;
-      overflow: hidden;
-      padding: 28px;
-      margin-bottom: 18px;
-      background: linear-gradient(180deg, #fdf7f2 0%, #eef4f7 100%);
-    }
-
-    .hero::after {
-      content: "";
-      position: absolute;
-      inset: auto -80px -110px auto;
-      width: 240px;
-      height: 240px;
-      border-radius: 50%;
-      background: radial-gradient(circle, rgba(255, 255, 255, 0.72) 0%, rgba(255, 255, 255, 0) 70%);
-      pointer-events: none;
-    }
-
     h1, h2, h3, p { margin: 0; }
-
-    h1 {
-      font-size: clamp(1.7rem, 2.8vw, 2.9rem);
-      line-height: 0.95;
-      letter-spacing: -0.04em;
-      margin-bottom: 10px;
+    .shell { width: 100%; margin: 0; padding: 20px 20px 28px; }
+    .hero, .panel {
+      background: var(--panel); border: 1px solid rgba(221,208,197,.88); border-radius: 24px;
+      box-shadow: var(--shadow); backdrop-filter: blur(10px);
     }
-
-    h2 {
-      font-size: clamp(1.2rem, 1.6vw, 1.55rem);
-      line-height: 1.1;
-      letter-spacing: -0.03em;
-      margin-bottom: 6px;
+    .hero { padding: 28px; background: linear-gradient(180deg, #fdf7f2 0%, #eef4f7 100%); }
+    .subtitle, .muted { color: var(--muted); }
+    .subtitle { max-width: 760px; margin: 10px 0 24px; }
+    .searchbar { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 12px; align-items: center; }
+    .action-stack { display: flex; gap: 10px; align-items: center; flex-wrap: nowrap; }
+    input, button, .tag, .badge, .source-pill, .inline-btn {
+      border: 1px solid var(--line); border-radius: 16px; font-size: 1rem;
+      transition: border-color .18s ease, box-shadow .18s ease, background .18s ease, transform .18s ease;
     }
-
-    h3 {
-      font-size: 1.02rem;
-      line-height: 1.2;
-    }
-
-    .subtitle {
-      color: var(--muted);
-      max-width: 780px;
-      line-height: 1.5;
-      margin-bottom: 24px;
-    }
-
-    .section-intro {
-      display: grid;
-      gap: 6px;
-    }
-
-    .searchbar {
-      display: grid;
-      grid-template-columns: minmax(0, 1fr) auto auto;
-      gap: 12px;
-      align-items: center;
-    }
-
-    input, button {
-      border: 1px solid var(--line);
-      border-radius: 16px;
-      font-size: 1rem;
-      padding: 14px 16px;
-      transition: border-color 0.18s ease, box-shadow 0.18s ease, background 0.18s ease, transform 0.18s ease;
-    }
-
     input {
-      background: rgba(255, 253, 250, 0.96);
-      color: var(--ink);
-      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.75);
+      padding: 14px 16px; background: rgba(255,253,250,.96); color: var(--ink);
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.75);
     }
-
     button {
-      background: var(--accent-strong);
-      color: white;
-      font-weight: 700;
-      cursor: pointer;
-      min-width: 150px;
-      box-shadow: 0 12px 24px rgba(86, 126, 119, 0.18);
+      padding: 14px 16px; background: var(--accent-strong); color: #fff; font-weight: 700; cursor: pointer;
+      box-shadow: 0 12px 24px rgba(86,126,119,.18);
     }
-
-    button:hover:not(:disabled) {
-      transform: translateY(-1px);
-      background: #4f756f;
-      box-shadow: 0 14px 28px rgba(86, 126, 119, 0.22);
-    }
-
-    button:disabled {
-      opacity: 0.72;
-      cursor: progress;
+    #searchBtn {
+      background: #dbe9e2;
+      border-color: #bfd1c8;
+      color: #324740;
       box-shadow: none;
     }
-
+    #searchBtn:hover:not(:disabled) { transform: translateY(-1px); background: #d2e2da; }
+    #analogBtn {
+      background: #e6e4ef;
+      border-color: #d2cedf;
+      color: #3f4358;
+      box-shadow: none;
+    }
+    #analogBtn:hover:not(:disabled) { transform: translateY(-1px); background: #dddbe8; }
+    button.mode-active { border-color: rgba(86,126,119,.55); box-shadow: 0 0 0 4px rgba(107,151,143,.14); }
+    button:disabled { opacity: .72; cursor: progress; box-shadow: none; }
+    .action-meta { display: flex; justify-content: center; min-height: 24px; min-width: 24px; }
     .spinner {
-      width: 24px;
-      height: 24px;
-      border-radius: 50%;
-      border: 3px solid rgba(15, 118, 110, 0.18);
-      border-top-color: var(--accent);
-      animation: spin 0.85s linear infinite;
-      opacity: 0;
-      transition: opacity 0.18s ease;
-      pointer-events: none;
+      width: 24px; height: 24px; border-radius: 50%; border: 3px solid rgba(15,118,110,.18);
+      border-top-color: var(--accent); animation: spin .85s linear infinite; opacity: 0; transition: opacity .18s ease;
     }
-
-    .spinner.running {
-      opacity: 1;
-    }
-
-    @keyframes spin {
-      to { transform: rotate(360deg); }
-    }
-
+    .spinner.running { opacity: 1; }
+    @keyframes spin { to { transform: rotate(360deg); } }
     .status {
-      margin-top: 14px;
-      color: var(--muted);
-      min-height: 24px;
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      padding: 10px 12px;
-      border-radius: 14px;
-      border: 1px solid rgba(221, 208, 197, 0.8);
-      background: rgba(255, 251, 247, 0.66);
+      margin-top: 14px; min-height: 24px; display: inline-flex; align-items: center; gap: 8px; padding: 10px 12px;
+      border-radius: 14px; border: 1px solid rgba(221,208,197,.8); background: rgba(255,251,247,.66); color: var(--muted);
     }
-
-    .grid {
-      display: grid;
-      grid-template-columns: 1.05fr 0.95fr;
-      gap: 18px;
-      margin-top: 18px;
-      align-items: start;
+    .status:empty { display: none; }
+    .view { display: none; margin-top: 18px; }
+    .view.visible { display: block; }
+    .grid { display: grid; grid-template-columns: 1.05fr .95fr; gap: 18px; align-items: start; }
+    .panel { padding: 22px; }
+    .resultado-normalizado { background: linear-gradient(180deg, #f8fbfd 0%, var(--powder) 100%); }
+    .pipeline-section { background: linear-gradient(180deg, #fff9fb 0%, var(--blush) 100%); }
+    .analogico-panel { --analog-text-columns: 2; background: linear-gradient(180deg, #fbf9fd 0%, #eef5ef 100%); }
+    .section-intro, .stack { display: grid; gap: 12px; }
+    .card, .summary-card, .analog-accordion {
+      border: 1px solid var(--line); border-radius: 20px; background: var(--surface); box-shadow: var(--shadow-soft);
     }
-
-    .panel {
-      padding: 22px;
+    .card { padding: 16px; }
+    .card.ok { background: var(--accent-soft); }
+    .card.fail { background: var(--danger-soft); }
+    .card-head, .summary-term-row, .summary-section-head, .analog-class-head, .filter-strip {
+      display: flex; justify-content: space-between; gap: 12px; align-items: baseline; flex-wrap: wrap;
     }
-
-    .panel.resultado-normalizado {
-      background: linear-gradient(180deg, #f8fbfd 0%, var(--powder) 100%);
+    .badge, .summary-lang, .filter-chip, .source-pill, .inline-btn, .tag {
+      padding: 6px 10px; border-radius: 999px; background: rgba(255,253,250,.92);
     }
-
-    .panel.pipeline-section {
-      background: linear-gradient(180deg, #fff9fb 0%, var(--blush) 100%);
-    }
-
-    .rag-panel {
-      background: linear-gradient(180deg, #fbfdf9 0%, var(--sage) 100%);
-    }
-
-    .stack {
-      display: grid;
-      gap: 14px;
-      align-content: start;
-    }
-
-    .metrics {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 10px;
-      margin-top: 16px;
-    }
-
-    .metric {
-      border: 1px solid var(--line);
-      border-radius: 999px;
-      padding: 8px 12px;
-      background: rgba(255, 253, 250, 0.92);
-      color: var(--muted);
-      font-size: 0.92rem;
-    }
-
-    .card {
-      border: 1px solid var(--line);
-      border-radius: 18px;
-      background: var(--surface);
-      padding: 16px;
-      box-shadow: var(--shadow-soft);
-    }
-
-    .card.ok {
-      border-color: rgba(15, 118, 110, 0.35);
-      background: var(--accent-soft);
-    }
-
-    .card.fail {
-      border-color: rgba(181, 107, 114, 0.35);
-      background: var(--danger-soft);
-    }
-
-    .card.retry {
-      box-shadow: inset 0 0 0 1px rgba(183, 121, 31, 0.28);
-    }
-
-    .card-head {
-      display: flex;
-      justify-content: space-between;
-      gap: 8px;
-      margin-bottom: 10px;
-      align-items: baseline;
-    }
-
-    .badge {
-      border-radius: 999px;
-      padding: 4px 10px;
-      font-size: 0.8rem;
-      font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
-      background: rgba(255, 255, 255, 0.78);
-      color: #405452;
-      border: 1px solid rgba(255, 255, 255, 0.6);
-    }
-
-    .card.ok .badge {
-      background: rgba(255, 255, 255, 0.62);
-      color: #315954;
-    }
-
-    .card.fail .badge {
-      background: rgba(255, 255, 255, 0.62);
-      color: #7a4b51;
-    }
-
-    .source-strip {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-      margin-top: 14px;
-    }
-
-    .summary-card {
-      display: grid;
-      gap: 18px;
-      padding: 22px;
-      background: #ffffff;
-      border: 1px solid rgba(216, 204, 186, 0.92);
-      border-radius: 24px;
-      box-shadow: var(--shadow);
-    }
-
-    .summary-hero {
-      display: grid;
-      gap: 10px;
-      padding-bottom: 16px;
-      border-bottom: 1px solid rgba(216, 204, 186, 0.8);
-    }
-
+    .source-pill { cursor: pointer; }
+    .source-pill.active { border-color: rgba(15,118,110,.5); box-shadow: inset 0 0 0 1px rgba(15,118,110,.18); }
+    .source-pill.retry { background: var(--warn-soft); }
+    .summary-card { padding: 22px; display: grid; gap: 18px; }
+    .summary-hero { display: grid; gap: 10px; padding-bottom: 16px; border-bottom: 1px solid rgba(216,204,186,.8); }
     .summary-kicker {
-      font-size: 0.8rem;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-      color: var(--muted);
-      font-weight: 700;
+      font-size: .8rem; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); font-weight: 700;
     }
-
-    .summary-term-row {
-      display: flex;
-      align-items: end;
-      justify-content: space-between;
-      gap: 16px;
-      flex-wrap: wrap;
-    }
-
-    .summary-term {
-      font-size: clamp(1.65rem, 2.6vw, 2.5rem);
-      line-height: 0.95;
-      letter-spacing: -0.04em;
-    }
-
-    .summary-lang {
-      border: 1px solid var(--line);
-      border-radius: 999px;
-      padding: 6px 10px;
-      background: rgba(237, 245, 241, 0.92);
-      color: var(--muted);
-      font-size: 0.86rem;
-      font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
-    }
-
-    .summary-meta {
-      display: grid;
-      grid-template-columns: repeat(4, minmax(0, 1fr));
-      gap: 10px;
-    }
-
+    .summary-term { font-size: clamp(1.65rem, 2.6vw, 2.5rem); line-height: .95; letter-spacing: -.04em; }
+    .summary-meta, .analog-meta { display: flex; flex-wrap: wrap; gap: 8px; }
     .summary-meta-card {
-      border: 1px solid rgba(107, 151, 143, 0.18);
-      border-radius: 16px;
-      padding: 12px 14px;
-      background: linear-gradient(180deg, #f8fbfa 0%, #eef5f2 100%);
-      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.8);
+      display: inline-flex; align-items: center; gap: 6px;
+      border: 1px solid rgba(107,151,143,.18); border-radius: 999px; padding: 6px 10px;
+      background: rgba(248,251,250,.96);
     }
-
-    .summary-meta-label {
-      display: block;
-      color: var(--muted);
-      font-size: 0.8rem;
-      margin-bottom: 6px;
-      text-transform: uppercase;
-      letter-spacing: 0.04em;
+    .summary-meta-label { display: inline; color: var(--muted); font-size: .8rem; margin-bottom: 0; text-transform: none; }
+    .summary-meta-value { font-size: .92rem; font-weight: 700; color: #30423f; }
+    .py-2 { padding-top: 8px; }
+    .column-controls { display: inline-flex; align-items: center; gap: 6px; }
+    .column-control-btn {
+      display: inline-flex; align-items: center; justify-content: center;
+      width: 80px; height: 80px; padding: 0;
+      border: 1px solid rgba(107,151,143,.22);
+      border-radius: 999px; background: rgba(255,253,250,.94); color: #42544f; box-shadow: none;
     }
-
-    .summary-meta-value {
-      font-size: 1.08rem;
-      font-weight: 700;
-      color: #30423f;
-    }
-
-    .summary-section {
-      display: grid;
-      gap: 10px;
-    }
-
-    .summary-section-head {
-      display: flex;
-      justify-content: space-between;
-      gap: 12px;
-      align-items: baseline;
-      flex-wrap: wrap;
-    }
-
-    .summary-section-head h3 {
-      font-size: 1.02rem;
-    }
-
-    .summary-note {
-      color: var(--muted);
-      font-size: 0.9rem;
-    }
-
+    .column-control-btn svg { width: 40px; height: 40px; display: block; }
+    .column-control-btn:hover:not(:disabled) { transform: translateY(-1px); background: #fff; }
+    .column-control-btn:disabled { opacity: .45; cursor: default; }
+    .column-control-readout { min-width: 42px; text-align: center; color: var(--muted); font-size: .82rem; }
     .etymology-box {
-      border-left: 4px solid rgba(15, 118, 110, 0.35);
-      padding: 12px 14px;
-      background: rgba(229, 241, 237, 0.9);
-      border-radius: 0 14px 14px 0;
-      line-height: 1.5;
+      border-left: 4px solid rgba(15,118,110,.35); padding: 12px 14px; border-radius: 0 14px 14px 0;
+      background: rgba(229,241,237,.9);
     }
-
-    .definition-list {
+    .plain-text-block { color: var(--ink); line-height: 1.55; }
+    .entry-section { padding-top: 8px; }
+    .definition-list { margin: 0; padding-left: 22px; display: grid; gap: 12px; }
+    .definition-main, .definition-note, .definition-example { display: block; }
+    .definition-note, .analog-class-note, .analog-accordion-meta, .detail-line, .analog-source { color: var(--muted); }
+    .definition-example { margin-top: 6px; padding-left: 12px; border-left: 2px solid rgba(15,118,110,.2); font-style: italic; }
+    .tag-cloud, .source-strip { display: flex; flex-wrap: wrap; gap: 8px; }
+    .analog-term-list {
       margin: 0;
       padding-left: 22px;
       display: grid;
-      gap: 12px;
+      grid-template-columns: repeat(var(--analog-text-columns, 2), minmax(0, 1fr));
+      column-gap: 22px;
+      row-gap: 6px;
     }
-
-    .definition-list li {
+    .analog-term-list li { color: var(--ink); line-height: 1.45; }
+    .entry-meta-strip { display: flex; flex-wrap: wrap; gap: 8px; }
+    .entry-meta-chip {
+      padding: 6px 10px; border-radius: 999px; border: 1px solid rgba(221,208,197,.82);
+      background: rgba(255,253,250,.92); color: var(--muted); font-size: .9rem;
+    }
+    .entry-sense-list {
       margin: 0;
-      padding-left: 4px;
-      line-height: 1.65;
-    }
-
-    .definition-main {
-      display: block;
-    }
-
-    .definition-note {
-      display: block;
-      margin-top: 4px;
-      color: var(--muted);
-      font-size: 0.92rem;
-    }
-
-    .definition-example {
-      display: block;
-      margin-top: 6px;
-      padding-left: 12px;
-      border-left: 2px solid rgba(15, 118, 110, 0.2);
-      color: #3d4a48;
-      font-style: italic;
-    }
-
-    .tag-cloud {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-    }
-
-    .tag {
-      border: 1px solid var(--line);
-      border-radius: 999px;
-      padding: 8px 12px;
-      background: rgba(255, 253, 250, 0.92);
-      font-size: 0.92rem;
-    }
-
-    .source-pill {
-      border: 1px solid var(--line);
-      background: rgba(255, 253, 250, 0.95);
-      border-radius: 999px;
-      padding: 8px 12px;
-      font-size: 0.88rem;
-      transition: transform 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
-      cursor: pointer;
-    }
-
-    .source-pill:hover {
-      background: #fff;
-      border-color: rgba(107, 151, 143, 0.28);
-    }
-
-    .source-pill.retry {
-      background: var(--warn-soft);
-      border-color: #e6c284;
-    }
-
-    .source-pill.active {
-      border-color: rgba(15, 118, 110, 0.5);
-      box-shadow: inset 0 0 0 1px rgba(15, 118, 110, 0.18);
-      transform: translateY(-1px);
-    }
-
-    .quality-list {
+      padding-left: 22px;
       display: grid;
+      grid-template-columns: 1fr;
+      column-gap: 22px;
       gap: 10px;
-      margin-top: 16px;
-      background: rgba(255, 251, 247, 0.72);
-      padding: 12px;
-      border: 1px solid rgba(221, 208, 197, 0.72);
-      border-radius: 16px;
     }
-
-    .quality-row {
-      display: grid;
-      grid-template-columns: minmax(110px, 140px) 1fr auto;
-      gap: 12px;
-      align-items: center;
-      border: 1px solid rgba(221, 208, 197, 0.4);
-      border-radius: 14px;
-      padding: 8px 10px;
-      transition: border-color 0.15s ease, background 0.15s ease;
-      cursor: pointer;
-      background: rgba(255, 255, 255, 0.52);
+    .entry-sense-list li { line-height: 1.55; padding-left: 4px; }
+    .analog-empty { padding: 18px; border: 1px dashed rgba(181,107,114,.32); border-radius: 18px; background: rgba(255,251,247,.86); color: var(--muted); }
+    .analog-accordion summary {
+      list-style: none; cursor: pointer; display: flex; justify-content: space-between; gap: 12px; align-items: center;
+      padding: 16px 18px; background: linear-gradient(180deg, #fffdf9 0%, #f4f8f5 100%);
     }
-
-    .quality-row:hover {
-      border-color: rgba(107, 151, 143, 0.24);
-      background: rgba(255, 255, 255, 0.82);
+    .analog-accordion summary::-webkit-details-marker { display: none; }
+    .pipeline-accordion summary {
+      list-style: none; cursor: pointer; display: grid; gap: 5px; padding: 12px 14px;
     }
-
-    .quality-row.active {
-      border-color: rgba(15, 118, 110, 0.3);
-      background: rgba(229, 241, 237, 0.88);
+    .pipeline-accordion summary::-webkit-details-marker { display: none; }
+    .pipeline-summary-line { color: var(--muted); font-size: .92rem; line-height: 1.35; }
+    .pipeline-card-body {
+      display: grid; gap: 8px; padding: 10px 14px 14px; border-top: 1px solid rgba(221,208,197,.7);
     }
-
-    .quality-bar {
-      position: relative;
-      width: 100%;
-      height: 12px;
-      border-radius: 999px;
-      overflow: hidden;
-      border: 1px solid var(--line);
-      background: rgba(255, 249, 244, 0.95);
-    }
-
-    .quality-bar > span {
-      display: block;
-      height: 100%;
-      background: linear-gradient(90deg, #6b978f 0%, #b8d7cf 100%);
-    }
-
-    .detail-line {
-      margin-top: 10px;
-      color: var(--muted);
-      font-size: 0.94rem;
-    }
-
-    .filter-strip {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 12px;
-      flex-wrap: wrap;
-    }
-
-    .filter-chip {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      border: 1px solid var(--line);
-      border-radius: 999px;
-      padding: 8px 12px;
-      background: rgba(255, 253, 250, 0.92);
-      color: var(--muted);
-      font-size: 0.9rem;
-    }
-
-    .filter-chip strong {
-      color: var(--ink);
-    }
-
-    .inline-btn {
-      border: 1px solid var(--line);
-      background: rgba(255, 253, 250, 0.95);
-      color: var(--ink);
-      min-width: auto;
-      padding: 8px 12px;
-      font-size: 0.88rem;
-      box-shadow: none;
-    }
-
-    .inline-btn:hover:not(:disabled) {
-      background: #ffffff;
-      border-color: rgba(107, 151, 143, 0.3);
-      box-shadow: 0 8px 18px rgba(121, 100, 82, 0.08);
-    }
-
-    .rag-panel {
-      margin-top: 18px;
-    }
-
-    .rag-panel-head {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 12px;
-      flex-wrap: wrap;
-    }
-
-    .rag-result {
-      border: 1px solid var(--line);
-      border-radius: 18px;
-      background: rgba(255, 255, 255, 0.84);
-      padding: 14px 16px;
-      cursor: pointer;
-      transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
-    }
-
-    .rag-result:hover {
-      transform: translateY(-1px);
-      box-shadow: 0 8px 20px rgba(80, 61, 34, 0.1);
-      border-color: rgba(15, 118, 110, 0.24);
-    }
-
-    .rag-result.featured {
-      background: linear-gradient(180deg, #fbfdfb 0%, var(--accent-soft) 100%);
-      border-color: rgba(15, 118, 110, 0.35);
-      box-shadow: inset 0 0 0 1px rgba(15, 118, 110, 0.12);
-    }
-
-    .rag-kicker {
-      display: inline-block;
-      margin-bottom: 10px;
-      border-radius: 999px;
-      padding: 4px 10px;
-      font-size: 0.78rem;
-      font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
-      background: rgba(229, 241, 237, 0.96);
-      color: #155e59;
-    }
-
-    .rag-result strong {
-      display: inline-block;
-      margin-right: 8px;
-    }
-
-    ul {
-      margin: 10px 0 0 18px;
-      padding: 0;
-    }
-
-    li { margin-bottom: 8px; }
-
-    pre {
-      margin: 0;
-      white-space: pre-wrap;
-      word-break: break-word;
-      background: rgba(255, 252, 249, 0.95);
-      color: var(--ink);
-      border: 1px solid var(--line);
-      border-radius: 18px;
-      padding: 16px;
-      font-size: 0.8rem;
-      line-height: 1.55;
-      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.72);
-      overflow: auto;
-      max-height: 420px;
-    }
-
-    .muted { color: var(--muted); }
-
-    input:focus-visible,
-    button:focus-visible,
-    .source-pill:focus-visible,
-    .quality-row:focus-visible,
-    .inline-btn:focus-visible,
-    .rag-result:focus-visible {
-      outline: none;
-      border-color: rgba(107, 151, 143, 0.56);
-      box-shadow: 0 0 0 4px rgba(107, 151, 143, 0.16);
-    }
-
-    @media (max-width: 980px) {
-      html { font-size: 14px; }
-      .shell { width: calc(100% - 28px); }
-      .grid { grid-template-columns: 1fr; }
-      .searchbar { grid-template-columns: 1fr auto; }
-      button { width: 100%; }
-      .spinner { justify-self: start; }
-    }
-
+    .pipeline-card-body .definition-list { gap: 8px; }
+    .pipeline-note { color: var(--muted); font-size: .9rem; line-height: 1.35; }
+    .pipeline-error { line-height: 1.35; }
+    .pipeline-card-body > p { margin: 0; }
+    .pipeline-accordion[open] summary { padding-bottom: 10px; }
+    .pipeline-accordion .card-head { margin: 0; }
+    .pipeline-accordion .badge { align-self: start; }
+    .pipeline-accordion .definition-list li { line-height: 1.5; }
+    .pipeline-accordion .definition-main { line-height: 1.45; }
+    body.academic-compact .pipeline-accordion summary { gap: 4px; padding: 10px 12px; }
+    body.academic-compact .pipeline-summary-line { font-size: .84rem; }
+    body.academic-compact .pipeline-card-body { gap: 6px; padding: 8px 12px 12px; }
+    body.academic-compact .pipeline-card-body .definition-list { gap: 6px; }
+    body.academic-compact .pipeline-note,
+    body.academic-compact .pipeline-error { font-size: .82rem; }
     @media (max-width: 720px) {
-      html { font-size: 13px; }
-      .shell { width: calc(100% - 20px); margin: 20px auto 32px; }
-      .hero, .panel { border-radius: 20px; }
-      .hero { padding: 22px; }
-      .panel { padding: 18px; }
-      .status { display: block; }
-      .quality-row {
-        grid-template-columns: 1fr;
-      }
-
-      .summary-meta {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-      }
+      .pipeline-accordion .card-head { display: grid; }
+    }
+    .analog-accordion-title { display: grid; gap: 4px; }
+    .analog-accordion-body { display: grid; gap: 14px; padding: 18px; border-top: 1px solid rgba(221,208,197,.7); }
+    .analog-class { display: grid; gap: 10px; padding: 14px; border-radius: 16px; background: rgba(248,252,250,.9); border: 1px solid rgba(221,208,197,.72); }
+    .json-accordion {
+      border: 1px solid var(--line); border-radius: 12px; background: var(--surface); box-shadow: var(--shadow-soft);
+    }
+    .json-accordion summary {
+      list-style: none; cursor: pointer; padding: 12px 14px; font-weight: 700;
+    }
+    .json-accordion summary::-webkit-details-marker { display: none; }
+    .json-accordion pre {
+      border: 0;
+      border-top: 1px solid rgba(221,208,197,.7);
+      border-radius: 0 0 12px 12px;
+    }
+    pre {
+      margin: 0; white-space: pre-wrap; word-break: break-word; max-height: 420px; overflow: auto; padding: 16px;
+      border: 1px solid var(--line); border-radius: 18px; background: rgba(255,252,249,.95); font-size: .8rem;
+    }
+    ul { margin: 10px 0 0 18px; padding: 0; }
+    input:focus-visible, button:focus-visible, .source-pill:focus-visible,
+    .inline-btn:focus-visible, .analog-accordion summary:focus-visible, .pipeline-accordion summary:focus-visible, .json-accordion summary:focus-visible {
+      outline: none; border-color: rgba(107,151,143,.56); box-shadow: 0 0 0 4px rgba(107,151,143,.16);
+    }
+    /* Reversao simples: remova a classe academic-compact do <body>. */
+    body.academic-compact {
+      --bg: #f4f1eb;
+      --bg-alt: #efede8;
+      --panel: rgba(252,251,249,.96);
+      --surface: #fffdfa;
+      --ink: #27231f;
+      --muted: #615950;
+      --line: #d6cfc6;
+      --accent: #5e766f;
+      --accent-strong: #465954;
+      --accent-soft: #eef1ee;
+      --powder: #f6f5f2;
+      --blush: #f7f4f1;
+      --sage: #f3f5f2;
+      --danger-soft: #f7eeee;
+      --warn-soft: #f6f0e7;
+      --shadow: 0 6px 16px rgba(58,50,42,.05);
+      --shadow-soft: 0 2px 8px rgba(58,50,42,.04);
+      font-size: 14px;
+      line-height: 1.42;
+      background: linear-gradient(180deg, #f7f5f1 0%, #f0ede7 100%);
+    }
+    body.academic-compact .shell { width: 100%; margin: 0; padding: 14px 14px 20px; }
+    body.academic-compact .hero,
+    body.academic-compact .panel {
+      border-radius: 14px;
+      border-color: rgba(214,207,198,.92);
+      box-shadow: var(--shadow);
+      backdrop-filter: none;
+    }
+    body.academic-compact .hero,
+    body.academic-compact .panel,
+    body.academic-compact .summary-card,
+    body.academic-compact .analog-accordion,
+    body.academic-compact .card,
+    body.academic-compact pre {
+      background-image: none;
+    }
+    body.academic-compact .hero { padding: 18px; }
+    body.academic-compact .panel { padding: 16px; }
+    body.academic-compact .subtitle { max-width: 700px; margin: 6px 0 16px; }
+    body.academic-compact .status {
+      margin-top: 10px;
+      min-height: 20px;
+      padding: 7px 10px;
+      border-radius: 10px;
+    }
+    body.academic-compact .view { margin-top: 12px; }
+    body.academic-compact .grid { gap: 12px; }
+    body.academic-compact .section-intro,
+    body.academic-compact .stack,
+    body.academic-compact .summary-card,
+    body.academic-compact .summary-hero,
+    body.academic-compact .analog-accordion-body { gap: 8px; }
+    body.academic-compact .searchbar { gap: 10px; grid-template-columns: minmax(0, 1fr) auto; }
+    body.academic-compact .action-stack { gap: 8px; }
+    body.academic-compact input,
+    body.academic-compact button,
+    body.academic-compact .tag,
+    body.academic-compact .badge,
+    body.academic-compact .source-pill,
+    body.academic-compact .inline-btn {
+      border-radius: 10px;
+      font-size: .95rem;
+    }
+    body.academic-compact input,
+    body.academic-compact button { padding: 10px 12px; }
+    body.academic-compact #searchBtn {
+      background: #dde8e1;
+      border-color: #c7d4cd;
+      color: #33453f;
+    }
+    body.academic-compact #analogBtn {
+      background: #e7e5ee;
+      border-color: #d5d1df;
+      color: #45495e;
+    }
+    body.academic-compact button {
+      font-weight: 600;
+      box-shadow: none;
+      letter-spacing: .01em;
+    }
+    body.academic-compact button:hover:not(:disabled) { transform: none; }
+    body.academic-compact .card,
+    body.academic-compact .summary-card { padding: 14px; }
+    body.academic-compact .card,
+    body.academic-compact .summary-card,
+    body.academic-compact .analog-accordion,
+    body.academic-compact .json-accordion,
+    body.academic-compact .analog-class,
+    body.academic-compact pre {
+      border-radius: 12px;
+      box-shadow: var(--shadow-soft);
+    }
+    body.academic-compact .card-head,
+    body.academic-compact .summary-term-row,
+    body.academic-compact .summary-section-head,
+    body.academic-compact .analog-class-head,
+    body.academic-compact .filter-strip { gap: 8px; }
+    body.academic-compact .summary-kicker {
+      font-size: .72rem;
+      letter-spacing: .12em;
+    }
+    body.academic-compact .summary-term {
+      font-size: clamp(1.35rem, 2vw, 2rem);
+      letter-spacing: -.02em;
+    }
+    body.academic-compact .summary-meta,
+    body.academic-compact .analog-meta { gap: 8px; }
+    body.academic-compact .column-controls { gap: 4px; }
+    body.academic-compact .column-control-btn {
+      width: 40px; height: 40px;
+      background: #e1e8ff;
+    }
+    body.academic-compact .column-control-btn svg { width: 20px; height: 20px; }
+    body.academic-compact .column-control-readout {
+      min-width: 40px;
+      font-size: .82rem;
+    }
+    body.academic-compact .summary-meta-card {
+      padding: 4px 8px;
+      border-radius: 999px;
+      background: #f7f5f1;
+    }
+    body.academic-compact .summary-meta-label { margin-bottom: 0; font-size: .72rem; }
+    body.academic-compact .summary-meta-value { font-size: .84rem; }
+    body.academic-compact .etymology-box {
+      padding: 10px 12px;
+      border-left-width: 3px;
+      border-radius: 0 10px 10px 0;
+      background: #f4f6f3;
+    }
+    body.academic-compact .definition-list,
+    body.academic-compact .entry-sense-list { gap: 8px; }
+    body.academic-compact .definition-example { margin-top: 4px; }
+    body.academic-compact .tag-cloud,
+    body.academic-compact .source-strip,
+    body.academic-compact .entry-meta-strip { gap: 6px; }
+    body.academic-compact .badge,
+    body.academic-compact .summary-lang,
+    body.academic-compact .filter-chip,
+    body.academic-compact .source-pill,
+    body.academic-compact .inline-btn,
+    body.academic-compact .tag,
+    body.academic-compact .entry-meta-chip {
+      padding: 4px 8px;
+      border-radius: 999px;
+      font-size: .82rem;
+      background: #f8f6f2;
+    }
+    body.academic-compact .analog-empty,
+    body.academic-compact .analog-accordion summary,
+    body.academic-compact .analog-accordion-body,
+    body.academic-compact .analog-class { padding: 12px; }
+    body.academic-compact .analog-class { gap: 8px; background: #fcfbf8; }
+    body.academic-compact .analog-term-list {
+      column-gap: 18px;
+      row-gap: 5px;
+    }
+    body.academic-compact pre {
+      max-height: 340px;
+      padding: 12px;
+      font-size: .74rem;
+      background: #faf8f5;
+    }
+    @media (max-width: 980px) {
+      .shell { padding: 16px 14px 22px; } .grid, .searchbar { grid-template-columns: 1fr; }
+      .summary-meta, .analog-meta { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .action-stack { flex-wrap: wrap; } .action-meta { justify-content: flex-start; }
+    }
+    @media (max-width: 720px) {
+      .shell { padding: 12px 10px 18px; } .hero, .panel { border-radius: 20px; }
+      .hero, .panel { padding: 20px; } .status { display: block; }
+      .analog-accordion summary, .analog-class-head { display: grid; }
+      .analog-term-list, .entry-sense-list { grid-template-columns: 1fr; column-gap: 0; }
     }
   </style>
 </head>
-<body>
+<body class="academic-compact">
   <main class="shell">
     <section class="hero">
-      <h1>Consulta Dicionarios</h1>
-      <p class="subtitle">
-        Backend FastAPI + frontend unico, score de qualidade, normalizacao JSON e busca semantica local.
-      </p>
+      <h1>Consulta Dicionários</h1>
       <div class="searchbar">
-        <input id="term" placeholder="Digite uma palavra, ex.: casa" value="" />
-        <button id="searchBtn">Consultar</button>
-        <div id="spinner" class="spinner" aria-hidden="true"></div>
+        <input id="term" placeholder="" value="" />
+        <div class="action-stack">
+          <button id="searchBtn" type="button">Definições</button>
+          <button id="analogBtn" type="button">Ideias Afins</button>
+          <div class="action-meta"><div id="spinner" class="spinner" aria-hidden="true"></div></div>
+        </div>
       </div>
-      <div class="status" id="status">Pronto para consultar.</div>
     </section>
 
-    <section class="grid">
-      <article class="panel stack resultado-normalizado">
-        <div class="section-intro">
-          <h2>Resultado normalizado</h2>
-          <p class="muted">Camada consolidada para UI, debug e ingestao futura em RAG.</p>
-        </div>
-        <div id="summary"></div>
-        <div class="card">
-          <h3>Ranking de qualidade</h3>
-          <p class="muted">Combinacao de peso da fonte com riqueza de definicoes e etimologia.</p>
-          <div id="qualityRanking" class="quality-list"></div>
-        </div>
-        <div>
-          <h3>JSON RAG-ready</h3>
-          <pre id="ragJson">{}</pre>
-        </div>
-      </article>
+    <section id="lexicoView" class="view">
+      <section class="grid">
+        <article class="panel stack resultado-normalizado">
+          <div class="section-intro">
+            <h2>Resultado normalizado</h2>
+          </div>
+          <div id="summary"></div>
+          <details class="json-accordion">
+            <summary>JSON</summary>
+            <pre id="resultJson">{}</pre>
+          </details>
+        </article>
 
-      <article class="panel stack pipeline-section">
-        <div class="section-intro">
-          <h2>Pipeline</h2>
-          <p class="muted">Cada fonte mostra status, tempo, score e material coletado.</p>
-        </div>
-        <div id="pipelineFilter" class="filter-strip"></div>
-        <div id="pipelineCards" class="stack"></div>
-      </article>
+        <article class="panel stack pipeline-section">
+          <div class="section-intro">
+            <h2>Pipeline</h2>
+          </div>
+          <div id="pipelineFilter" class="filter-strip"></div>
+          <div id="pipelineCards" class="stack"></div>
+        </article>
+      </section>
+
     </section>
 
-    <section class="panel stack rag-panel">
-      <div class="rag-panel-head">
+    <section id="analogicoView" class="view">
+      <article class="panel stack analogico-panel">
         <div class="section-intro">
-          <h2>Busca semantica RAG</h2>
-          <p class="muted">Resultados automaticos para o termo principal consultado.</p>
+          <h2>Ideias Afins</h2>
         </div>
-        <div id="ragSpinner" class="spinner" aria-hidden="true"></div>
-      </div>
-      <div class="status" id="ragStatus">A busca semantica sera executada automaticamente apos a consulta principal.</div>
-      <div id="ragResults" class="stack"></div>
+        <div id="analogicoEntry"></div>
+        <div id="analogicoSummary"></div>
+        <div id="analogicoSenses" class="stack"></div>
+      </article>
     </section>
   </main>
 
   <script>
+    /** @typedef {{label:string,group_count:number,term_count:number,groups:string[][],terms:string[]}} AnalogicoClassGroup */
+    /** @typedef {{title:string,term_count:number,classes:AnalogicoClassGroup[]}} AnalogicoSense */
+    /** @typedef {{index:number,text:string}} AnalogicoEntrySense */
+    /** @typedef {{found:boolean,label:string,term:string,pronunciation:string,grammar:string,sense_count:number,definitions:AnalogicoEntrySense[],etymology:string|null}} AnalogicoEntry */
+    /** @typedef {{input:{term:string,normalized_term:string,accentless_term:string},source:{name:string,url:string,cache_hit:boolean},entry:AnalogicoEntry,result:{term:string,found:boolean,sense_count:number,term_count:number,senses:AnalogicoSense[]},debug:{elapsed_ms:number,raw_keyword_count:number,empty_headings_dropped:number,message:string|null}}} AnalogicoPayload */
+
     const termInput = document.getElementById("term");
     const searchBtn = document.getElementById("searchBtn");
+    const analogBtn = document.getElementById("analogBtn");
     const spinnerEl = document.getElementById("spinner");
     const statusEl = document.getElementById("status");
+    const lexicoViewEl = document.getElementById("lexicoView");
+    const analogicoViewEl = document.getElementById("analogicoView");
     const summaryEl = document.getElementById("summary");
-    const qualityRankingEl = document.getElementById("qualityRanking");
-    const ragJsonEl = document.getElementById("ragJson");
+    const resultJsonEl = document.getElementById("resultJson");
     const pipelineFilterEl = document.getElementById("pipelineFilter");
     const pipelineCardsEl = document.getElementById("pipelineCards");
-    const ragSpinnerEl = document.getElementById("ragSpinner");
-    const ragStatusEl = document.getElementById("ragStatus");
-    const ragResultsEl = document.getElementById("ragResults");
+    const analogicoPanelEl = document.querySelector(".analogico-panel");
+    const analogicoEntryEl = document.getElementById("analogicoEntry");
+    const analogicoSummaryEl = document.getElementById("analogicoSummary");
+    const analogicoSensesEl = document.getElementById("analogicoSenses");
 
     let latestPipeline = [];
     let activeSourceFilter = null;
+    let activeMode = null;
+    let latestLexicalPayload = null;
+    let latestLexicalTerm = "";
+    let latestAnalogicalPayload = null;
+    let latestAnalogicalTerm = "";
+    const ANALOG_TEXT_COLUMNS_MIN = 1;
+    const ANALOG_TEXT_COLUMNS_MAX = 10;
+    const ANALOG_TEXT_COLUMNS_DEFAULT = 8;
+    let analogTextColumns = ANALOG_TEXT_COLUMNS_DEFAULT;
 
     function escapeHtml(value) {
-      return String(value)
-        .replaceAll("&", "&amp;")
-        .replaceAll("<", "&lt;")
-        .replaceAll(">", "&gt;")
-        .replaceAll('"', "&quot;")
-        .replaceAll("'", "&#39;");
+      return String(value).replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;").replaceAll('"', "&quot;").replaceAll("'", "&#39;");
     }
-
+    function setBusy(isBusy) {
+      searchBtn.disabled = isBusy; analogBtn.disabled = isBusy; spinnerEl.classList.toggle("running", isBusy);
+    }
+    function setStatus(message) {
+      if (statusEl) statusEl.textContent = message;
+    }
+    function applyAnalogTextColumns() {
+      analogicoPanelEl?.style.setProperty("--analog-text-columns", String(analogTextColumns));
+    }
+    function updateAnalogColumnControls() {
+      const decreaseBtn = document.getElementById("decreaseColumnsBtn");
+      const increaseBtn = document.getElementById("increaseColumnsBtn");
+      const readout = analogicoSummaryEl.querySelector(".column-control-readout");
+      if (decreaseBtn) decreaseBtn.disabled = analogTextColumns <= ANALOG_TEXT_COLUMNS_MIN;
+      if (increaseBtn) increaseBtn.disabled = analogTextColumns >= ANALOG_TEXT_COLUMNS_MAX;
+      if (readout) readout.textContent = `${analogTextColumns} col.`;
+    }
+    function bindAnalogColumnControls() {
+      document.getElementById("decreaseColumnsBtn")?.addEventListener("click", () => adjustAnalogTextColumns(-1));
+      document.getElementById("increaseColumnsBtn")?.addEventListener("click", () => adjustAnalogTextColumns(1));
+    }
+    function adjustAnalogTextColumns(delta) {
+      const nextValue = Math.max(ANALOG_TEXT_COLUMNS_MIN, Math.min(ANALOG_TEXT_COLUMNS_MAX, analogTextColumns + delta));
+      if (nextValue === analogTextColumns) return;
+      analogTextColumns = nextValue;
+      applyAnalogTextColumns();
+      updateAnalogColumnControls();
+    }
+    function setActiveMode(mode) {
+      activeMode = mode;
+      searchBtn.classList.toggle("mode-active", mode === "lexico");
+      analogBtn.classList.toggle("mode-active", mode === "analogico");
+    }
+    function setVisibleView(mode) {
+      lexicoViewEl.classList.toggle("visible", mode === "lexico");
+      analogicoViewEl.classList.toggle("visible", mode === "analogico");
+    }
     function renderList(items) {
-      if (!items || !items.length) return "<p class='muted'>Sem itens.</p>";
-      return `<ul>${items.map(item => `<li>${escapeHtml(item)}</li>`).join("")}</ul>`;
+      return !items || !items.length ? "<p class='muted'>Sem itens.</p>" : `<ul>${items.map(item => `<li>${escapeHtml(item)}</li>`).join("")}</ul>`;
     }
-
+    function renderTags(items) {
+      return !items || !items.length ? "<p class='muted'>Sem itens consolidados.</p>" : `<div class="tag-cloud">${items.map(item => `<span class="tag">${escapeHtml(item)}</span>`).join("")}</div>`;
+    }
+    function renderBulletedTerms(items) {
+      return !items || !items.length ? "<p class='muted'>Sem itens consolidados.</p>" : `<ul class="analog-term-list">${items.map(item => `<li>${escapeHtml(item)}</li>`).join("")}</ul>`;
+    }
+    function renderNumberedList(items, emptyMessage = "Sem itens consolidados.") {
+      return !items || !items.length ? `<p class='muted'>${escapeHtml(emptyMessage)}</p>` : `<ol class="definition-list">${items.map(item => `<li><span class="definition-main">${escapeHtml(item)}</span></li>`).join("")}</ol>`;
+    }
     function renderDefinitionCards(items) {
       if (!items || !items.length) return "<p class='muted'>Nenhuma definicao consolidada.</p>";
-      return `
-        <ol class="definition-list">
-          ${items.map(item => {
-            const parts = String(item).split(/\\bSinonim(?:o|os):\\s*/i);
-            const mainPart = parts[0].trim();
-            const synonymPart = parts[1] ? parts[1].trim() : "";
-            const examples = [...mainPart.matchAll(/[“"]([^”"]{6,220})[”"]/g)].map(match => match[1]);
-            const mainWithoutExamples = mainPart.replace(/[“"]([^”"]{6,220})[”"]/g, "").replace(/\\s{2,}/g, " ").trim();
-
-            return `
-              <li>
-                <span class="definition-main">${escapeHtml(mainWithoutExamples || mainPart)}</span>
-                ${synonymPart ? `<span class="definition-note">Sinonimos: ${escapeHtml(synonymPart)}</span>` : ""}
-                ${examples.map(example => `<span class="definition-example">${escapeHtml(example)}</span>`).join("")}
-              </li>
-            `;
-          }).join("")}
-        </ol>
-      `;
+      return `<ol class="definition-list">${items.map(item => {
+        const parts = String(item).split(/\bSinonim(?:o|os):\s*/i);
+        const mainPart = parts[0].trim();
+        const synonymPart = parts[1] ? parts[1].trim() : "";
+        const examples = [...mainPart.matchAll(/[â€œ"]([^â€"]{6,220})[â€"]/g)].map(match => match[1]);
+        const mainWithoutExamples = mainPart.replace(/[â€œ"]([^â€"]{6,220})[â€"]/g, "").replace(/\s{2,}/g, " ").trim();
+        return `<li><span class="definition-main">${escapeHtml(mainWithoutExamples || mainPart)}</span>${synonymPart ? `<span class="definition-note">Sinonimos: ${escapeHtml(synonymPart)}</span>` : ""}${examples.map(example => `<span class="definition-example">${escapeHtml(example)}</span>`).join("")}</li>`;
+      }).join("")}</ol>`;
     }
-
-    function renderTags(items) {
-      if (!items || !items.length) return "<p class='muted'>Sem itens consolidados.</p>";
-      return `<div class="tag-cloud">${items.map(item => `<span class="tag">${escapeHtml(item)}</span>`).join("")}</div>`;
+    function normalizeLookupText(value) {
+      return String(value || "")
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "")
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, " ")
+        .trim();
+    }
+    function scoreAnalogSenseMatch(title, term) {
+      const normalizedTitle = normalizeLookupText(title);
+      const normalizedTerm = normalizeLookupText(term);
+      if (!normalizedTitle || !normalizedTerm) return 0;
+      if (normalizedTitle === normalizedTerm) return 100;
+      if (normalizedTitle.startsWith(normalizedTerm) || normalizedTerm.startsWith(normalizedTitle)) return 80;
+      if (normalizedTitle.includes(normalizedTerm) || normalizedTerm.includes(normalizedTitle)) return 70;
+      const titleTokens = normalizedTitle.split(" ").filter(Boolean);
+      const termTokens = normalizedTerm.split(" ").filter(Boolean);
+      const sharedTokens = titleTokens.filter(token => termTokens.includes(token));
+      if (sharedTokens.length) return 40 + sharedTokens.length;
+      return 0;
+    }
+    function prioritizeAnalogSenses(senses, term) {
+      if (!Array.isArray(senses) || senses.length < 2) return senses || [];
+      return senses
+        .map((sense, index) => ({ sense, index, score: scoreAnalogSenseMatch(sense.title, term) }))
+        .sort((left, right) => right.score - left.score || left.index - right.index)
+        .map(item => item.sense);
     }
 
     function renderSummary(result, debug) {
-      const summary = result.summary;
       const sourcePills = debug.source_details.map(source => `
         <span class="source-pill ${source.accent_retry ? "retry" : ""} ${activeSourceFilter === source.source ? "active" : ""}" data-source-pill="${escapeHtml(source.source)}" role="button" tabindex="0">
-          ${escapeHtml(source.source)} - ${source.definition_count} defs - score ${source.quality_score}${source.accent_retry ? " - sem acento" : ""}
+          ${escapeHtml(source.source)} - ${source.definition_count} defs${source.accent_retry ? " - sem acento" : ""}
         </span>
       `).join("");
 
@@ -807,272 +581,268 @@
               <span class="summary-lang">${escapeHtml(result.lang)}</span>
             </div>
             <div class="summary-meta">
-              <div class="summary-meta-card">
-                <span class="summary-meta-label">Fontes validas</span>
-                <span class="summary-meta-value">${debug.sources_ok}/${debug.sources_total}</span>
-              </div>
-              <div class="summary-meta-card">
-                <span class="summary-meta-label">Definicoes</span>
-                <span class="summary-meta-value">${summary.definitions.length}</span>
-              </div>
-              <div class="summary-meta-card">
-                <span class="summary-meta-label">Sinonimos</span>
-                <span class="summary-meta-value">${summary.synonyms.length}</span>
-              </div>
-              <div class="summary-meta-card">
-                <span class="summary-meta-label">Latencia</span>
-                <span class="summary-meta-value">${debug.elapsed_ms} ms</span>
-              </div>
+              <div class="summary-meta-card"><span class="summary-meta-label">Fontes validas:</span><span class="summary-meta-value">${debug.sources_ok}/${debug.sources_total}</span></div>
+              <div class="summary-meta-card"><span class="summary-meta-label">Definicoes:</span><span class="summary-meta-value">${result.summary.definitions.length}</span></div>
+              <div class="summary-meta-card"><span class="summary-meta-label">Sinonimos:</span><span class="summary-meta-value">${result.summary.synonyms.length}</span></div>
+              <div class="summary-meta-card"><span class="summary-meta-label">Latencia:</span><span class="summary-meta-value">${debug.elapsed_ms} ms</span></div>
             </div>
             <div class="source-strip">${sourcePills}</div>
           </div>
-
-          <section class="summary-section">
-            <div class="summary-section-head">
-              <h3>Etimologia</h3>
-              <span class="summary-note">${debug.accent_retry_count} retries sem acento</span>
-            </div>
-            <div class="etymology-box">
-              ${escapeHtml(summary.etymology || "Etimologia nao encontrada nas fontes ativas.")}
-            </div>
+          <section class="section-intro">
+            <div class="summary-section-head py-2"><h3>Etimologia</h3><span class="muted">${debug.accent_retry_count} retries sem acento</span></div>
+            <div class="etymology-box">${escapeHtml(result.summary.etymology || "Etimologia nao encontrada nas fontes ativas.")}</div>
           </section>
-
-          <section class="summary-section">
-            <div class="summary-section-head">
-              <h3>Definicoes priorizadas</h3>
-              <span class="summary-note">Ordem consolidada a partir das fontes com melhor score</span>
-            </div>
-            ${renderDefinitionCards(summary.definitions)}
+          <section class="section-intro">
+            <div class="summary-section-head py-2"><h3>Definicoes priorizadas</h3></div>
+            ${renderDefinitionCards(result.summary.definitions)}
           </section>
-
-          <section class="summary-section">
-            <div class="summary-section-head">
-              <h3>Sinonimos consolidados</h3>
-              <span class="summary-note">Normalizados e sem duplicacao</span>
-            </div>
-            ${renderTags(summary.synonyms)}
+          <section class="section-intro">
+            <div class="summary-section-head py-2"><h3>Sinonimos consolidados</h3></div>
+            ${renderNumberedList(result.summary.synonyms)}
           </section>
-        </div>
-      `;
+        </div>`;
 
       summaryEl.querySelectorAll("[data-source-pill]").forEach(node => {
         const source = node.getAttribute("data-source-pill");
         const activate = () => setSourceFilter(source === activeSourceFilter ? null : source);
         node.addEventListener("click", activate);
         node.addEventListener("keydown", (event) => {
-          if (event.key === "Enter" || event.key === " ") {
-            event.preventDefault();
-            activate();
-          }
-        });
-      });
-    }
-
-    function renderRanking(ranking) {
-      qualityRankingEl.innerHTML = ranking.map(item => `
-        <div class="quality-row ${activeSourceFilter === item.source ? "active" : ""}" data-ranking-source="${escapeHtml(item.source)}" role="button" tabindex="0">
-          <strong>${escapeHtml(item.source)}</strong>
-          <div class="quality-bar"><span style="width:${Math.min(item.quality_score, 130) / 130 * 100}%"></span></div>
-          <span class="muted">score ${item.quality_score} - ${item.definition_count} defs</span>
-        </div>
-      `).join("");
-
-      qualityRankingEl.querySelectorAll("[data-ranking-source]").forEach(node => {
-        const source = node.getAttribute("data-ranking-source");
-        const activate = () => setSourceFilter(source === activeSourceFilter ? null : source);
-        node.addEventListener("click", activate);
-        node.addEventListener("keydown", (event) => {
-          if (event.key === "Enter" || event.key === " ") {
-            event.preventDefault();
-            activate();
-          }
+          if (event.key === "Enter" || event.key === " ") { event.preventDefault(); activate(); }
         });
       });
     }
 
     function setSourceFilter(source) {
       activeSourceFilter = source;
-      if (window.latestLexicalPayload) {
-        renderSummary(window.latestLexicalPayload.result, window.latestLexicalPayload.debug);
-        renderRanking(window.latestLexicalPayload.result.ranking);
+      if (latestLexicalPayload) {
+        renderSummary(latestLexicalPayload.result, latestLexicalPayload.debug);
       }
       renderPipeline(latestPipeline);
-      statusEl.textContent = source
-        ? `Filtro ativo no pipeline: ${source}.`
-        : "Filtro do pipeline limpo.";
+      setStatus(source ? `Filtro ativo no pipeline: ${source}.` : "Filtro do pipeline limpo.");
     }
 
     function renderPipelineFilter() {
       if (!activeSourceFilter) {
-        pipelineFilterEl.innerHTML = "<p class='muted'>Clique em um resultado da busca semantica para filtrar o pipeline por fonte.</p>";
+        pipelineFilterEl.innerHTML = "<p class='muted'>Clique em uma fonte no resumo para filtrar o pipeline.</p>";
         return;
       }
-
-      pipelineFilterEl.innerHTML = `
-        <div class="filter-chip">
-          Filtro ativo:
-          <strong>${escapeHtml(activeSourceFilter)}</strong>
-        </div>
-        <button class="inline-btn" id="clearPipelineFilter" type="button">Limpar filtro</button>
-      `;
-
-      document.getElementById("clearPipelineFilter").addEventListener("click", () => {
-        setSourceFilter(null);
-      });
+      pipelineFilterEl.innerHTML = `<div class="filter-chip">Filtro ativo: <strong>${escapeHtml(activeSourceFilter)}</strong></div><button class="inline-btn" id="clearPipelineFilter" type="button">Limpar filtro</button>`;
+      document.getElementById("clearPipelineFilter").addEventListener("click", () => setSourceFilter(null));
     }
 
     function renderPipeline(pipeline) {
       renderPipelineFilter();
-      const visibleStages = activeSourceFilter
-        ? pipeline.filter(stage => stage.source === activeSourceFilter)
-        : pipeline;
-
+      const visibleStages = activeSourceFilter ? pipeline.filter(stage => stage.source === activeSourceFilter) : pipeline;
       if (!visibleStages.length) {
         pipelineCardsEl.innerHTML = "<div class='card'><p class='muted'>Nenhuma etapa corresponde ao filtro atual.</p></div>";
         return;
       }
-
       pipelineCardsEl.innerHTML = visibleStages.map(stage => `
-        <section class="card ${stage.ok ? "ok" : "fail"} ${stage.extra.retry_without_accents ? "retry" : ""}">
-          <div class="card-head">
-            <strong>${escapeHtml(stage.source)}</strong>
-            <span class="badge">${stage.ok ? "OK" : "FALHA"} - ${stage.elapsed_ms} ms</span>
+        <details class="card pipeline-accordion ${stage.ok ? "ok" : "fail"} ${stage.extra.retry_without_accents ? "retry" : ""}">
+          <summary>
+            <div class="card-head"><strong>${escapeHtml(stage.source)}</strong><span class="badge">${stage.ok ? "OK" : "FALHA"} - ${stage.elapsed_ms} ms</span></div>
+            <p class="pipeline-summary-line">Definicoes: <strong>${stage.data.definition_count}</strong></p>
+          </summary>
+          <div class="pipeline-card-body">
+            ${stage.error ? `<p class="pipeline-error"><strong>Erro:</strong> ${escapeHtml(stage.error)}</p>` : ""}
+            ${stage.extra.first_attempt ? "<p class='pipeline-note'>Primeira tentativa falhou ou veio vazia; retry aplicado.</p>" : ""}
+            ${renderNumberedList(stage.data.definitions, "Nenhuma definicao aproveitavel.")}
           </div>
-          <p class="muted">${escapeHtml(stage.url || "")}</p>
-          <p class="detail-line">Score de qualidade: <strong>${stage.quality_score}</strong></p>
-          <p class="detail-line">
-            Termo consultado: <strong>${escapeHtml(stage.extra.query_term || "-")}</strong>
-            ${stage.extra.retry_without_accents ? " - retry sem acento" : ""}
-            ${stage.extra.original_term ? ` - original: ${escapeHtml(stage.extra.original_term)}` : ""}
-          </p>
-          ${stage.error ? `<p><strong>Erro:</strong> ${escapeHtml(stage.error)}</p>` : ""}
-          ${stage.extra.first_attempt ? `<p class="detail-line">Primeira tentativa falhou ou veio vazia; retry aplicado.</p>` : ""}
-          <p><strong>Definicoes:</strong> ${stage.data.definition_count}</p>
-          ${stage.data.definitions.length ? renderList(stage.data.definitions.slice(0, 3)) : "<p class='muted'>Nenhuma definicao aproveitavel.</p>"}
-        </section>
-      `).join("");
+        </details>`).join("");
     }
 
-    function renderRagResults(payload) {
-      if (!payload.results.length) {
-        ragResultsEl.innerHTML = "<div class='rag-result muted'>Nenhum chunk encontrado para o termo atual.</div>";
+    function renderLexicoError(message) {
+      summaryEl.innerHTML = `<div class="card fail"><p><strong>Falha:</strong> ${escapeHtml(message)}</p></div>`;
+      pipelineFilterEl.innerHTML = "";
+      pipelineCardsEl.innerHTML = "";
+      resultJsonEl.textContent = "{}";
+    }
+
+    function renderAnalogicoEntry(entry) {
+      if (!entry || !entry.found) {
+        analogicoEntryEl.innerHTML = `
+          <div class="card">
+            <div class="section-intro">
+              <div class="summary-section-head"><h3>Verbete Atualizado</h3></div>
+              <p class="muted">Nao foi possivel extrair o verbete atualizado em formato organizado para esta consulta.</p>
+            </div>
+          </div>`;
         return;
       }
 
-      const [featured, ...others] = payload.results;
-      const featuredMarkup = `
-        <article class="rag-result featured" data-source="${escapeHtml(featured.source)}" role="button" tabindex="0">
-          <div class="rag-kicker">Melhor correspondencia</div>
-          <p>
-            <strong>${escapeHtml(featured.source)}</strong>
-            <span class="muted">termo ${escapeHtml(featured.term)} - score semantico ${featured.score} - quality ${featured.quality_score}</span>
-          </p>
-          <p class="detail-line">${escapeHtml(featured.content)}</p>
-        </article>
-      `;
+      const metaChips = [
+        entry.pronunciation ? `<span class="entry-meta-chip">Pronuncia: ${escapeHtml(entry.pronunciation)}</span>` : "",
+        entry.grammar ? `<span class="entry-meta-chip">Classe: ${escapeHtml(entry.grammar)}</span>` : "",
+        `<span class="entry-meta-chip">${entry.sense_count} acepcoes</span>`,
+      ].filter(Boolean).join("");
 
-      const othersMarkup = others.map(item => `
-        <article class="rag-result" data-source="${escapeHtml(item.source)}" role="button" tabindex="0">
-          <p>
-            <strong>${escapeHtml(item.source)}</strong>
-            <span class="muted">termo ${escapeHtml(item.term)} - score semantico ${item.score} - quality ${item.quality_score}</span>
-          </p>
-          <p class="detail-line">${escapeHtml(item.content)}</p>
-        </article>
-      `).join("");
-
-      ragResultsEl.innerHTML = featuredMarkup + othersMarkup;
-      ragResultsEl.querySelectorAll(".rag-result").forEach(node => {
-        const source = node.getAttribute("data-source");
-        const activate = () => setSourceFilter(source);
-        node.addEventListener("click", activate);
-        node.addEventListener("keydown", (event) => {
-          if (event.key === "Enter" || event.key === " ") {
-            event.preventDefault();
-            activate();
-          }
-        });
-      });
+      analogicoEntryEl.innerHTML = `
+        <div class="summary-card">
+          <div class="summary-hero">
+            <span class="summary-kicker">${escapeHtml(entry.label)}</span>
+            <div class="summary-term-row">
+              <h3 class="summary-term">${escapeHtml(entry.term)}</h3>
+              <span class="summary-lang">Aulete</span>
+            </div>
+            <div class="entry-meta-strip">${metaChips}</div>
+          </div>
+          <section class="section-intro entry-section">
+            <div class="summary-section-head"><h3>Definicao e acepcoes</h3></div>
+            ${entry.definitions.length
+              ? `<ol class="entry-sense-list">${entry.definitions.map(item => `<li value="${item.index}">${escapeHtml(item.text)}</li>`).join("")}</ol>`
+              : "<p class='muted'>Nenhuma acepcao estruturada foi encontrada.</p>"}
+          </section>
+          ${entry.etymology ? `
+            <section class="section-intro entry-section">
+              <div class="summary-section-head"><h3>Etimologia</h3></div>
+              <div class="plain-text-block">${escapeHtml(entry.etymology)}</div>
+            </section>` : ""}
+        </div>`;
     }
 
-    async function runRagSearch(term) {
-      if (!term) {
-        ragStatusEl.textContent = "A busca semantica depende do termo principal consultado.";
-        ragResultsEl.innerHTML = "";
+    function renderAnalogico(payload) {
+      const result = payload.result;
+      const debug = payload.debug;
+      const orderedSenses = prioritizeAnalogSenses(result.senses, payload.input?.term || result.term);
+      renderAnalogicoEntry(payload.entry);
+      analogicoSummaryEl.innerHTML = `
+        <div class="summary-card">
+          <div class="summary-hero">
+            <span class="summary-kicker">Mapa analogico</span>
+            <div class="summary-term-row">
+              <h3 class="summary-term">${escapeHtml(result.term)}</h3>
+              <div class="column-controls" aria-label="Controle de colunas">
+                <button class="column-control-btn" id="decreaseColumnsBtn" type="button" title="Diminuir colunas" ${analogTextColumns <= ANALOG_TEXT_COLUMNS_MIN ? "disabled" : ""}>
+                  <svg viewBox="0 0 16 16" aria-hidden="true" focusable="false">
+                    <rect x="1.5" y="2.5" width="4" height="11" rx="1"></rect>
+                    <rect x="10.5" y="2.5" width="4" height="11" rx="1" opacity=".35"></rect>
+                    <path d="M6.5 8h3" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"></path>
+                  </svg>
+                </button>
+                <span class="column-control-readout">${analogTextColumns} col.</span>
+                <button class="column-control-btn" id="increaseColumnsBtn" type="button" title="Aumentar colunas" ${analogTextColumns >= ANALOG_TEXT_COLUMNS_MAX ? "disabled" : ""}>
+                  <svg viewBox="0 0 16 16" aria-hidden="true" focusable="false">
+                    <rect x="1.5" y="2.5" width="4" height="11" rx="1" opacity=".35"></rect>
+                    <rect x="10.5" y="2.5" width="4" height="11" rx="1"></rect>
+                    <path d="M6.5 8h3M8 6.5v3" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"></path>
+                  </svg>
+                </button>
+              </div>
+            </div>
+            <div class="analog-meta">
+              <div class="summary-meta-card"><span class="summary-meta-label">Acepcoes:</span><span class="summary-meta-value">${result.sense_count}</span></div>
+              <div class="summary-meta-card"><span class="summary-meta-label">Termos afins:</span><span class="summary-meta-value">${result.term_count}</span></div>
+              <div class="summary-meta-card"><span class="summary-meta-label">Blocos brutos:</span><span class="summary-meta-value">${debug.raw_keyword_count}</span></div>
+              <div class="summary-meta-card"><span class="summary-meta-label">Latencia:</span><span class="summary-meta-value">${debug.elapsed_ms} ms</span></div>
+              <div class="summary-meta-card"><span class="summary-meta-label">Cabecalhos vazios removidos:</span><span class="summary-meta-value">${debug.empty_headings_dropped}</span></div>
+            </div>
+          </div>
+        </div>`;
+      bindAnalogColumnControls();
+      updateAnalogColumnControls();
+
+      if (!orderedSenses.length) {
+        analogicoSensesEl.innerHTML = "<div class='analog-empty'>Nenhuma acepcao analoga foi encontrada para o termo consultado.</div>";
         return;
       }
 
-      ragSpinnerEl.classList.add("running");
-      ragStatusEl.textContent = `Buscando no indice local para o termo "${term}"...`;
-
-      try {
-        const params = new URLSearchParams({
-          q: term,
-          term,
-          limit: "5",
-        });
-        const response = await fetch(`/rag/search?${params.toString()}`);
-        if (!response.ok) {
-          throw new Error(`HTTP ${response.status}`);
-        }
-
-        const payload = await response.json();
-        renderRagResults(payload);
-        ragStatusEl.textContent = `Busca semantica concluida. ${payload.results.length} resultados para o termo "${payload.term_scope || term}".`;
-      } catch (error) {
-        ragResultsEl.innerHTML = "";
-        ragStatusEl.textContent = `Falha na busca semantica: ${error.message}`;
-      } finally {
-        ragSpinnerEl.classList.remove("running");
-      }
+      analogicoSensesEl.innerHTML = orderedSenses.map((sense, index) => `
+        <details class="analog-accordion">
+          <summary>
+            <div class="analog-accordion-title">
+              <strong>${escapeHtml(sense.title)}</strong>
+              <span class="analog-accordion-meta">${sense.term_count} termos · ${sense.classes.length} classes</span>
+            </div>
+            <span class="badge">${sense.classes.length} secoes</span>
+          </summary>
+          <div class="analog-accordion-body">
+            ${sense.classes.map(group => `
+              <section class="analog-class">
+                <div class="analog-class-head"><h3>${escapeHtml(group.label)}</h3><span class="analog-class-note">${group.term_count} termos · ${group.group_count} grupos</span></div>
+                ${renderBulletedTerms(group.terms)}
+              </section>`).join("")}
+          </div>
+        </details>`).join("");
     }
 
     async function fetchLexicon() {
       const term = termInput.value.trim();
-      if (!term) {
-        statusEl.textContent = "Informe uma palavra para consultar.";
+      if (!term) { setStatus("Informe uma palavra para consultar."); return; }
+      setActiveMode("lexico");
+      if (latestLexicalPayload && latestLexicalTerm === term) {
+        renderSummary(latestLexicalPayload.result, latestLexicalPayload.debug);
+        renderPipeline(latestPipeline);
+        resultJsonEl.textContent = JSON.stringify(latestLexicalPayload.result, null, 2);
+        setVisibleView("lexico");
+        setStatus(`Resultado lexical em cache reaproveitado para "${term}".`);
         return;
       }
-
-      searchBtn.disabled = true;
-      spinnerEl.classList.add("running");
-      statusEl.textContent = `Consultando "${term}" nas fontes configuradas...`;
-      ragResultsEl.innerHTML = "";
-
+      setVisibleView(null);
+      setBusy(true);
+      setStatus(`Consultando "${term}" nas fontes configuradas...`);
       try {
         const response = await fetch(`/lexico?palavra=${encodeURIComponent(term)}`);
-        if (!response.ok) {
-          throw new Error(`HTTP ${response.status}`);
-        }
-
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
         const payload = await response.json();
-        window.latestLexicalPayload = payload;
+        latestLexicalPayload = payload;
+        latestLexicalTerm = term;
         latestPipeline = payload.pipeline;
         activeSourceFilter = null;
         renderSummary(payload.result, payload.debug);
-        renderRanking(payload.result.ranking);
         renderPipeline(latestPipeline);
-        ragJsonEl.textContent = JSON.stringify(payload.result, null, 2);
-        //statusEl.textContent = `Consulta concluida. Fallback geral: ${payload.debug.fallback_used ? "sim" : "nao"}. Retry sem acento: ${payload.debug.accent_retry_count}.`;
-        await runRagSearch(term);
+        resultJsonEl.textContent = JSON.stringify(payload.result, null, 2);
+        setVisibleView("lexico");
+        setStatus(`Consulta concluida para "${term}".`);
       } catch (error) {
-        summaryEl.innerHTML = `<p><strong>Falha:</strong> ${escapeHtml(error.message)}</p>`;
-        qualityRankingEl.innerHTML = "";
-        pipelineFilterEl.innerHTML = "";
-        pipelineCardsEl.innerHTML = "";
-        ragJsonEl.textContent = "{}";
-        ragResultsEl.innerHTML = "";
-        ragStatusEl.textContent = "Nao foi possivel executar a busca semantica.";
-        statusEl.textContent = "Nao foi possivel concluir a consulta.";
+        renderLexicoError(error.message);
+        setVisibleView("lexico");
+        setStatus(`Nao foi possivel concluir a consulta de "${term}".`);
       } finally {
-        searchBtn.disabled = false;
-        spinnerEl.classList.remove("running");
+        setBusy(false);
+      }
+    }
+
+    async function fetchAnalogico() {
+      const term = termInput.value.trim();
+      if (!term) { setStatus("Informe uma palavra para consultar."); return; }
+      setActiveMode("analogico");
+      if (latestAnalogicalPayload && latestAnalogicalTerm === term) {
+        renderAnalogico(latestAnalogicalPayload);
+        setVisibleView("analogico");
+        setStatus(`Resultado analogico em cache reaproveitado para "${term}".`);
+        return;
+      }
+      setVisibleView(null);
+      setBusy(true);
+      setStatus(`Buscando ideias afins para "${term}" no Aulete...`);
+      try {
+        const response = await fetch(`/analogico?palavra=${encodeURIComponent(term)}`);
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+        /** @type {AnalogicoPayload} */
+        const payload = await response.json();
+        latestAnalogicalPayload = payload;
+        latestAnalogicalTerm = term;
+        renderAnalogico(payload);
+        setVisibleView("analogico");
+        setStatus(payload.result.found ? `Ideias afins carregadas para "${term}".` : (payload.debug.message || `Nenhuma relacao de ideias afins foi encontrada para "${term}".`));
+      } catch (error) {
+        analogicoEntryEl.innerHTML = "";
+        analogicoSummaryEl.innerHTML = `<div class="card fail"><p><strong>Falha:</strong> ${escapeHtml(error.message)}</p></div>`;
+        analogicoSensesEl.innerHTML = "<div class='analog-empty'>Nao foi possivel consolidar as ideias afins para o termo atual.</div>";
+        setVisibleView("analogico");
+        setStatus(`Falha ao buscar ideias afins para "${term}".`);
+      } finally {
+        setBusy(false);
       }
     }
 
     searchBtn.addEventListener("click", fetchLexicon);
+    analogBtn.addEventListener("click", fetchAnalogico);
     termInput.addEventListener("keydown", (event) => {
-      if (event.key === "Enter") fetchLexicon();
+      if (event.key === "Enter") {
+        if (activeMode === "analogico") fetchAnalogico();
+        else fetchLexicon();
+      }
     });
   </script>
 </body>

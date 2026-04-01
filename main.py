@@ -1,9 +1,7 @@
 from __future__ import annotations
 
 import copy
-import hashlib
 import html
-import math
 import re
 import time
 import unicodedata
@@ -24,17 +22,14 @@ INDEX_FILE = BASE_DIR / "index.html"
 
 USER_AGENT = "DictioLexico/1.1 (+local dev lexical pipeline)"
 REQUEST_TIMEOUT = 12
-EMBEDDING_DIM = 96
 
-SOURCE_SCORES = {
-    "Aulete": 1.00,
-    "Michaelis": 0.96,
-    "Priberam": 0.92,
-    "Wiktionary": 0.76,
-    "Dicio": 0.66,
-}
-
-RAG_INDEX: dict[str, dict[str, Any]] = {}
+SOURCE_PRECEDENCE = (
+    "Aulete",
+    "Priberam",
+    "Michaelis",
+    "Wiktionary",
+    "Dicio",
+)
 
 app = FastAPI(
     title="Dictio Lexical Pipeline",
@@ -181,37 +176,6 @@ def normalize_definitions(definitions: list[str]) -> list[str]:
     return dedupe(normalized)
 
 
-def tokenize(text: str) -> list[str]:
-    base = strip_accents(clean_text(text).casefold())
-    return re.findall(r"[a-z0-9]{2,}", base)
-
-
-def embed_text(text: str, dim: int = EMBEDDING_DIM) -> list[float]:
-    vector = [0.0] * dim
-    for token in tokenize(text):
-        digest = hashlib.blake2b(token.encode("utf-8"), digest_size=8).digest()
-        index = int.from_bytes(digest[:4], "big") % dim
-        sign = 1.0 if digest[4] % 2 == 0 else -1.0
-        weight = 1.0 + min(len(token), 12) / 12
-        vector[index] += sign * weight
-
-    norm = math.sqrt(sum(item * item for item in vector))
-    if not norm:
-        return vector
-    return [round(item / norm, 6) for item in vector]
-
-
-def cosine_similarity(left: list[float], right: list[float]) -> float:
-    return round(sum(a * b for a, b in zip(left, right)), 6)
-
-
-def stage_quality_score(source: str, definition_count: int, synonym_count: int, has_etymology: bool) -> float:
-    base = SOURCE_SCORES.get(source, 0.5) * 100
-    richness = min(definition_count, 10) * 2.2 + min(synonym_count, 8) * 0.8
-    etymology_bonus = 3.0 if has_etymology else 0.0
-    return round(base + richness + etymology_bonus, 2)
-
-
 @lru_cache(maxsize=512)
 def fetch_html_cached(url: str) -> tuple[str, str]:
     response = requests.get(
@@ -248,7 +212,6 @@ def build_stage(
     examples = dedupe(examples or [])
     etymology = clean_text(etymology) or None
     elapsed_ms = round((time.perf_counter() - started_at) * 1000, 1)
-    quality_score = stage_quality_score(source, len(definitions), len(synonyms), bool(etymology))
 
     return {
         "source": source,
@@ -256,7 +219,6 @@ def build_stage(
         "url": url,
         "elapsed_ms": elapsed_ms,
         "error": error,
-        "quality_score": quality_score,
         "data": {
             "definitions": definitions,
             "synonyms": synonyms,
@@ -302,6 +264,196 @@ def fetch_aulete(word: str) -> dict[str, Any]:
         )
     except Exception as exc:
         return build_stage("Aulete", started_at, ok=False, url=url, error=str(exc))
+
+
+def parse_analogico_keyword(keyword: Any) -> tuple[dict[str, Any] | None, int]:
+    title_node = keyword.find("h2")
+    title = clean_text(title_node.get_text(" ", strip=True) if title_node else "")
+    if not title:
+        return None, 0
+
+    classes: list[dict[str, Any]] = []
+    current_class: dict[str, Any] | None = None
+    empty_headings_dropped = 0
+
+    for child in keyword.children:
+        tag_name = getattr(child, "name", None)
+        if tag_name == "h3":
+            label = clean_text(child.get_text(" ", strip=True))
+            if current_class is not None:
+                if current_class["terms"]:
+                    current_class["term_count"] = len(current_class["terms"])
+                    current_class["group_count"] = len(current_class["groups"])
+                    classes.append(current_class)
+                else:
+                    empty_headings_dropped += 1
+            current_class = {
+                "label": label or "Sem classe",
+                "group_count": 0,
+                "term_count": 0,
+                "groups": [],
+                "terms": [],
+            }
+        elif tag_name == "span" and "analog_group" in (child.get("class") or []):
+            if current_class is None:
+                current_class = {
+                    "label": "Sem classe",
+                    "group_count": 0,
+                    "term_count": 0,
+                    "groups": [],
+                    "terms": [],
+                }
+
+            group_terms = dedupe(
+                [
+                    clean_text(word_node.get_text(" ", strip=True))
+                    for word_node in child.select(".word")
+                ]
+            )
+            if group_terms:
+                current_class["groups"].append(group_terms)
+                current_class["terms"] = dedupe(current_class["terms"] + group_terms)
+
+    if current_class is not None:
+        if current_class["terms"]:
+            current_class["term_count"] = len(current_class["terms"])
+            current_class["group_count"] = len(current_class["groups"])
+            classes.append(current_class)
+        else:
+            empty_headings_dropped += 1
+
+    if not classes:
+        return None, empty_headings_dropped
+
+    sense = {
+        "title": title,
+        "term_count": sum(item["term_count"] for item in classes),
+        "classes": classes,
+    }
+    return sense, empty_headings_dropped
+
+
+def clean_aulete_entry_segment(value: str) -> str:
+    cleaned = strip_html(value)
+    if not cleaned:
+        return ""
+    cleaned = unicodedata.normalize("NFKC", cleaned)
+    cleaned = re.sub(r"\(\s*editar\s*\)", " ", cleaned, flags=re.I)
+    cleaned = re.sub(r"\s+", " ", cleaned)
+    cleaned = re.sub(r"\s+([,.;:)\]])", r"\1", cleaned)
+    cleaned = re.sub(r"([(\[])\s+", r"\1", cleaned)
+    cleaned = re.sub(r"(?<=[^\s])\[(?=[A-Za-z])", " [", cleaned)
+    cleaned = re.sub(r"\s{2,}", " ", cleaned)
+    return cleaned.strip(" -")
+
+
+def parse_aulete_updated_entry(soup: BeautifulSoup, word: str) -> dict[str, Any]:
+    copy_node = soup.select_one("#copy")
+    raw_text = clean_aulete_entry_segment(copy_node.get_text(" ", strip=True) if copy_node else "")
+    if not raw_text:
+        return {
+            "found": False,
+            "label": "Verbete Atualizado",
+            "term": word,
+            "pronunciation": "",
+            "grammar": "",
+            "sense_count": 0,
+            "definitions": [],
+            "etymology": None,
+        }
+
+    pronunciation = ""
+    body = raw_text
+    pronunciation_match = re.match(r"^\(([^)]+)\)\s*(.*)$", body)
+    if pronunciation_match:
+        pronunciation = clean_text(pronunciation_match.group(1))
+        body = pronunciation_match.group(2)
+
+    grammar = ""
+    first_sense_match = re.search(r"(?<!\d)(\d+)\.\s*", body)
+    if first_sense_match:
+        grammar = clean_aulete_entry_segment(body[:first_sense_match.start()])
+        body = body[first_sense_match.start():]
+
+    etymology = None
+    etymology_index = body.lower().rfind("[f.:")
+    if etymology_index != -1:
+        etymology_end = body.find("]", etymology_index)
+        if etymology_end != -1:
+            etymology = clean_aulete_entry_segment(body[etymology_index + 4:etymology_end])
+            body = body[:etymology_index]
+
+    matches = list(re.finditer(r"(?<!\d)(\d+)\.\s*", body))
+    definitions: list[dict[str, Any]] = []
+    if matches:
+        for index, match in enumerate(matches):
+            end = matches[index + 1].start() if index + 1 < len(matches) else len(body)
+            text = clean_aulete_entry_segment(body[match.end():end])
+            if text:
+                definitions.append({"index": int(match.group(1)), "text": text})
+    else:
+        text = clean_aulete_entry_segment(body)
+        if text:
+            definitions.append({"index": 1, "text": text})
+
+    return {
+        "found": bool(definitions),
+        "label": "Verbete Atualizado",
+        "term": word,
+        "pronunciation": pronunciation,
+        "grammar": grammar,
+        "sense_count": len(definitions),
+        "definitions": definitions,
+        "etymology": etymology,
+    }
+
+
+def fetch_analogico_aulete(word: str) -> dict[str, Any]:
+    started_at = time.perf_counter()
+    url = f"https://www.aulete.com.br/{quote(word)}"
+    html_text, final_url, cache_hit = fetch_html(url)
+    soup = BeautifulSoup(html_text, "html.parser")
+    hidden_content = soup.select_one("#analogico_aulete #hidden_content")
+    keywords = hidden_content.select(".keyword") if hidden_content else []
+
+    senses: list[dict[str, Any]] = []
+    empty_headings_dropped = 0
+    for keyword in keywords:
+        sense, dropped = parse_analogico_keyword(keyword)
+        empty_headings_dropped += dropped
+        if sense is not None:
+            senses.append(sense)
+    updated_entry = parse_aulete_updated_entry(soup, word)
+
+    found = bool(senses)
+    message = None if found else f'Nenhuma relacao de ideias afins foi encontrada para "{word}".'
+
+    return {
+        "input": {
+            "term": word,
+            "normalized_term": word.casefold(),
+            "accentless_term": strip_accents(word),
+        },
+        "source": {
+            "name": "Aulete Analogico",
+            "url": final_url,
+            "cache_hit": cache_hit,
+        },
+        "entry": updated_entry,
+        "result": {
+            "term": word,
+            "found": found,
+            "sense_count": len(senses),
+            "term_count": sum(sense["term_count"] for sense in senses),
+            "senses": senses,
+        },
+        "debug": {
+            "elapsed_ms": round((time.perf_counter() - started_at) * 1000, 1),
+            "raw_keyword_count": len(keywords),
+            "empty_headings_dropped": empty_headings_dropped,
+            "message": message,
+        },
+    }
 
 
 def fetch_dicio(word: str) -> dict[str, Any]:
@@ -540,70 +692,20 @@ def fetch_with_accent_fallback(source_fetcher: Callable[[str], dict[str, Any]], 
     return primary
 
 
-def rank_stages(stages: list[dict[str, Any]]) -> list[dict[str, Any]]:
-    return sorted(
-        stages,
-        key=lambda stage: (
-            stage["ok"],
-            stage["quality_score"],
-            stage["data"]["definition_count"],
-        ),
-        reverse=True,
-    )
+def source_priority(source: str) -> int:
+    try:
+        return SOURCE_PRECEDENCE.index(source)
+    except ValueError:
+        return len(SOURCE_PRECEDENCE)
 
 
-def build_rag_chunks(word: str, ranked_stages: list[dict[str, Any]]) -> list[dict[str, Any]]:
-    chunks: list[dict[str, Any]] = []
-    for stage in ranked_stages:
-        if not stage["ok"]:
-            continue
-        for index, definition in enumerate(stage["data"]["definitions"], start=1):
-            chunks.append(
-                {
-                    "chunk_id": f"lexico:{word.casefold()}:{stage['source'].casefold()}:{index}",
-                    "term": word,
-                    "source": stage["source"],
-                    "quality_score": stage["quality_score"],
-                    "content": definition,
-                    "embedding_model": "hash-embedding-v1",
-                    "metadata": {
-                        "lang": "pt-BR",
-                        "position": index,
-                        "query_term": stage["extra"].get("query_term", word),
-                    },
-                }
-            )
-    return chunks
-
-
-def index_rag_chunks(chunks: list[dict[str, Any]]) -> dict[str, Any]:
-    indexed = 0
-    terms: set[str] = set()
-    for chunk in chunks:
-        embedding = embed_text(chunk["content"])
-        RAG_INDEX[chunk["chunk_id"]] = {
-            "chunk_id": chunk["chunk_id"],
-            "term": chunk["term"],
-            "source": chunk["source"],
-            "content": chunk["content"],
-            "quality_score": chunk["quality_score"],
-            "embedding": embedding,
-            "embedding_model": chunk["embedding_model"],
-            "metadata": chunk["metadata"],
-        }
-        indexed += 1
-        terms.add(chunk["term"])
-    return {
-        "indexed_chunks": indexed,
-        "unique_terms_indexed": len(terms),
-        "index_size": len(RAG_INDEX),
-        "embedding_model": "hash-embedding-v1",
-    }
+def order_stages(stages: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    return sorted(stages, key=lambda stage: (source_priority(stage["source"]), stage["source"]))
 
 
 def normalize_payload(word: str, stages: list[dict[str, Any]]) -> dict[str, Any]:
-    ranked_stages = rank_stages(stages)
-    working = [stage for stage in ranked_stages if stage["ok"]]
+    ordered_stages = order_stages(stages)
+    working = [stage for stage in ordered_stages if stage["ok"]]
 
     definitions: list[str] = []
     synonyms: list[str] = []
@@ -620,8 +722,6 @@ def normalize_payload(word: str, stages: list[dict[str, Any]]) -> dict[str, Any]
     definitions = dedupe(definitions)
     synonyms = dedupe(synonyms)
     examples = dedupe(examples)
-    chunks = build_rag_chunks(word, working)
-
     return {
         "term": word,
         "lang": "pt-BR",
@@ -631,29 +731,8 @@ def normalize_payload(word: str, stages: list[dict[str, Any]]) -> dict[str, Any]
             "examples": examples[:6],
             "etymology": etymology,
         },
-        "ranking": [
-            {
-                "source": stage["source"],
-                "quality_score": stage["quality_score"],
-                "definition_count": stage["data"]["definition_count"],
-            }
-            for stage in working
-        ],
-        "rag": {
-            "document_id": f"lexico:{word.casefold()}",
-            "title": f"Entrada lexical: {word}",
-            "text": "\n".join(definitions[:8]),
-            "metadata": {
-                "term": word,
-                "lang": "pt-BR",
-                "sources_ok": [stage["source"] for stage in working],
-                "sources_failed": [stage["source"] for stage in stages if not stage["ok"]],
-                "definition_count": len(definitions),
-                "synonym_count": len(synonyms),
-                "ranking_strategy": "source_score + richness",
-            },
-            "chunks": chunks,
-        },
+        "sources_ok": [stage["source"] for stage in working],
+        "sources_failed": [stage["source"] for stage in ordered_stages if not stage["ok"]],
     }
 
 
@@ -661,14 +740,13 @@ def run_lexical_pipeline(word: str) -> dict[str, Any]:
     started_at = time.perf_counter()
     pipeline = [
         fetch_with_accent_fallback(fetch_aulete, word),
-        fetch_with_accent_fallback(fetch_dicio, word),
-        fetch_with_accent_fallback(fetch_wiktionary, word),
         fetch_with_accent_fallback(fetch_priberam, word),
         fetch_with_accent_fallback(fetch_michaelis, word),
+        fetch_with_accent_fallback(fetch_wiktionary, word),
+        fetch_with_accent_fallback(fetch_dicio, word),
     ]
-    pipeline = rank_stages(pipeline)
+    pipeline = order_stages(pipeline)
     normalized = normalize_payload(word, pipeline)
-    indexing = index_rag_chunks(normalized["rag"]["chunks"])
     ok_count = sum(1 for stage in pipeline if stage["ok"])
     accent_retry_count = sum(1 for stage in pipeline if stage["extra"].get("retry_without_accents"))
 
@@ -697,43 +775,11 @@ def run_lexical_pipeline(word: str) -> dict[str, Any]:
                     "accent_retry": bool(stage["extra"].get("retry_without_accents")),
                     "query_term": stage["extra"].get("query_term", word),
                     "definition_count": stage["data"]["definition_count"],
-                    "quality_score": stage["quality_score"],
                 }
                 for stage in pipeline
             ],
-            "indexing": indexing,
         },
     }
-
-
-def search_rag_index(query: str, limit: int = 5, term: str | None = None) -> list[dict[str, Any]]:
-    query_embedding = embed_text(query)
-    scoped_term = clean_text(term) if term else None
-    candidates = list(RAG_INDEX.values())
-    if scoped_term:
-        scoped_candidates = [
-            item for item in candidates
-            if item["term"].casefold() == scoped_term.casefold()
-        ]
-        if scoped_candidates:
-            candidates = scoped_candidates
-
-    hits: list[dict[str, Any]] = []
-    for item in candidates:
-        score = cosine_similarity(query_embedding, item["embedding"])
-        hits.append(
-            {
-                "chunk_id": item["chunk_id"],
-                "term": item["term"],
-                "source": item["source"],
-                "content": item["content"],
-                "score": score,
-                "quality_score": item["quality_score"],
-                "metadata": item["metadata"],
-            }
-        )
-    hits.sort(key=lambda entry: (entry["score"], entry["quality_score"]), reverse=True)
-    return hits[:limit]
 
 
 @app.get("/", response_class=FileResponse)
@@ -745,7 +791,6 @@ def home() -> FileResponse:
 def health() -> dict[str, Any]:
     return {
         "status": "ok",
-        "rag_index_size": len(RAG_INDEX),
         "html_cache": fetch_html_cached.cache_info()._asdict(),
     }
 
@@ -756,18 +801,7 @@ def lexico(palavra: str = Query(..., min_length=1, max_length=80)) -> dict[str, 
     return run_lexical_pipeline(word)
 
 
-@app.get("/rag/search")
-def rag_search(
-    q: str = Query(..., min_length=2),
-    limit: int = Query(5, ge=1, le=20),
-    term: str | None = Query(None),
-) -> dict[str, Any]:
-    scoped_term = clean_text(term) if term else None
-    return {
-        "query": q,
-        "term_scope": scoped_term,
-        "limit": limit,
-        "results": search_rag_index(q, limit=limit, term=scoped_term),
-        "index_size": len(RAG_INDEX),
-        "embedding_model": "hash-embedding-v1",
-    }
+@app.get("/analogico")
+def analogico(palavra: str = Query(..., min_length=1, max_length=80)) -> dict[str, Any]:
+    word = clean_text(palavra)
+    return fetch_analogico_aulete(word)
