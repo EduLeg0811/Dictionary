@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import copy
 import html
+import os
 import re
 import time
 import unicodedata
@@ -19,6 +20,11 @@ from fastapi.responses import FileResponse
 
 BASE_DIR = Path(__file__).resolve().parent
 INDEX_FILE = BASE_DIR / "index.html"
+FRONTEND_ORIGINS = [
+    origin.strip()
+    for origin in os.getenv("DICTIO_FRONTEND_ORIGINS", "http://localhost:5500,http://127.0.0.1:5500").split(",")
+    if origin.strip()
+]
 
 USER_AGENT = "DictioLexico/1.1 (+local dev lexical pipeline)"
 REQUEST_TIMEOUT = 12
@@ -39,7 +45,7 @@ app = FastAPI(
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=FRONTEND_ORIGINS or ["*"],
     allow_methods=["*"],
     allow_headers=["*"],
 )
@@ -791,6 +797,7 @@ def home() -> FileResponse:
 def health() -> dict[str, Any]:
     return {
         "status": "ok",
+        "frontend_origins": FRONTEND_ORIGINS,
         "html_cache": fetch_html_cached.cache_info()._asdict(),
     }
 

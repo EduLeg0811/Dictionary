@@ -439,6 +439,12 @@
   </main>
 
   <script>
+    const isLocalDevelopmentHost = ["localhost", "127.0.0.1"].includes(window.location.hostname)
+      || window.location.protocol === "file:";
+    const API_BASE_URL = (window.DICTIO_API_BASE_URL || "").trim() || (
+      isLocalDevelopmentHost ? "http://127.0.0.1:8000" : ""
+    );
+
     /** @typedef {{label:string,group_count:number,term_count:number,groups:string[][],terms:string[]}} AnalogicoClassGroup */
     /** @typedef {{title:string,term_count:number,classes:AnalogicoClassGroup[]}} AnalogicoSense */
     /** @typedef {{index:number,text:string}} AnalogicoEntrySense */
@@ -512,6 +518,9 @@
     function setVisibleView(mode) {
       lexicoViewEl.classList.toggle("visible", mode === "lexico");
       analogicoViewEl.classList.toggle("visible", mode === "analogico");
+    }
+    function buildApiUrl(path) {
+      return `${API_BASE_URL}${path}`;
     }
     function renderList(items) {
       return !items || !items.length ? "<p class='muted'>Sem itens.</p>" : `<ul>${items.map(item => `<li>${escapeHtml(item)}</li>`).join("")}</ul>`;
@@ -782,7 +791,7 @@
       setBusy(true);
       setStatus(`Consultando "${term}" nas fontes configuradas...`);
       try {
-        const response = await fetch(`/lexico?palavra=${encodeURIComponent(term)}`);
+        const response = await fetch(buildApiUrl(`/lexico?palavra=${encodeURIComponent(term)}`));
         if (!response.ok) throw new Error(`HTTP ${response.status}`);
         const payload = await response.json();
         latestLexicalPayload = payload;
@@ -817,7 +826,7 @@
       setBusy(true);
       setStatus(`Buscando ideias afins para "${term}" no Aulete...`);
       try {
-        const response = await fetch(`/analogico?palavra=${encodeURIComponent(term)}`);
+        const response = await fetch(buildApiUrl(`/analogico?palavra=${encodeURIComponent(term)}`));
         if (!response.ok) throw new Error(`HTTP ${response.status}`);
         /** @type {AnalogicoPayload} */
         const payload = await response.json();
