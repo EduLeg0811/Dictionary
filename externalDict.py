@@ -22,7 +22,7 @@ BASE_DIR = Path(__file__).resolve().parent
 INDEX_FILE = BASE_DIR / "index.html"
 FRONTEND_ORIGINS = [
     origin.strip()
-    for origin in os.getenv("DICTIO_FRONTEND_ORIGINS", "http://localhost:5500,http://127.0.0.1:5500").split(",")
+    for origin in os.getenv("DICTIO_FRONTEND_ORIGINS", "*").split(",")
     if origin.strip()
 ]
 
@@ -45,7 +45,7 @@ app = FastAPI(
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=FRONTEND_ORIGINS or ["*"],
+    allow_origins=["*"] if "*" in FRONTEND_ORIGINS else FRONTEND_ORIGINS,
     allow_methods=["*"],
     allow_headers=["*"],
 )
