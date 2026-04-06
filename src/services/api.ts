@@ -1,6 +1,6 @@
-const PRODUCTION_API_BASE_URL = "https://dictionary-wtrh.onrender.com";
-const isLocalDevelopmentHost = ["localhost", "127.0.0.1"].includes(window.location.hostname) || window.location.protocol === "file:";
-const API_BASE_URL = (window as typeof window & { DICTIO_API_BASE_URL?: string }).DICTIO_API_BASE_URL?.trim() || (isLocalDevelopmentHost ? "http://127.0.0.1:8000" : PRODUCTION_API_BASE_URL);
+const API_BASE_URL =
+  (window as typeof window & { DICTIO_API_BASE_URL?: string }).DICTIO_API_BASE_URL?.trim() ||
+  "https://ghost-writer-backend.onrender.com";
 
 export interface LexicalResponse {
   result: {
