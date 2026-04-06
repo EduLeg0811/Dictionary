@@ -11,11 +11,11 @@ export function Badge({ children, variant = 'default', size = 'md', className = 
   const baseStyles = 'inline-flex items-center font-medium rounded-full border';
 
   const variantStyles = {
-    default: 'bg-stone-50 text-stone-700 border-stone-200',
-    success: 'bg-emerald-50 text-emerald-700 border-emerald-200',
-    warning: 'bg-amber-50 text-amber-700 border-amber-200',
-    info: 'bg-sky-50 text-sky-700 border-sky-200',
-    subtle: 'bg-white text-stone-600 border-stone-200',
+    default: 'border-slate-200 bg-slate-100/70 text-slate-700',
+    success: 'border-emerald-200 bg-emerald-50/80 text-emerald-800',
+    warning: 'border-amber-200 bg-amber-50/80 text-amber-800',
+    info: 'border-blue-200 bg-blue-50/80 text-blue-800',
+    subtle: 'border-slate-200 bg-white/80 text-slate-600',
   };
 
   const sizeStyles = {

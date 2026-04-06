@@ -21,16 +21,16 @@ export function LexicalView({ data }: LexicalViewProps) {
   };
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-      <div className="lg:col-span-2 space-y-6">
+    <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
+      <div className="space-y-6 lg:col-span-2">
         <Card>
           <CardHeader className="space-y-4">
-            <div className="flex items-baseline justify-between gap-4 flex-wrap">
+            <div className="flex flex-wrap items-baseline justify-between gap-4">
               <div>
-                <p className="text-xs font-semibold text-stone-500 uppercase tracking-wider mb-2">
+                <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-slate-500">
                   Entrada Consolidada
                 </p>
-                <h2 className="text-3xl font-semibold text-stone-900 tracking-tight">
+                <h2 className="text-3xl font-semibold tracking-tight text-slate-900">
                   {result.term}
                 </h2>
               </div>
@@ -58,10 +58,10 @@ export function LexicalView({ data }: LexicalViewProps) {
                 <button
                   key={source.source}
                   onClick={() => toggleSource(source.source)}
-                  className={`px-3 py-1.5 text-sm rounded-full border transition-all duration-200 ${
+                  className={`rounded-full border px-3 py-1.5 text-sm transition-all duration-200 ${
                     selectedSource === source.source
-                      ? 'bg-sky-50 border-sky-300 text-sky-900'
-                      : 'bg-white border-stone-200 text-stone-700 hover:border-stone-300'
+                      ? 'border-blue-200 bg-blue-50/90 text-blue-900'
+                      : 'border-slate-200 bg-white/85 text-slate-700 hover:border-slate-300'
                   }`}
                 >
                   {source.source} ({source.definition_count})
@@ -72,42 +72,45 @@ export function LexicalView({ data }: LexicalViewProps) {
           </CardHeader>
 
           {result.summary.etymology && (
-            <CardContent className="border-t border-stone-100">
-              <h3 className="text-sm font-semibold text-stone-900 mb-3">Etimologia</h3>
-              <div className="bg-sky-50 border-l-4 border-sky-400 rounded-r-lg p-4">
-                <p className="text-stone-700 leading-relaxed">{result.summary.etymology}</p>
+            <CardContent className="border-t border-slate-100">
+              <h3 className="mb-3 text-sm font-semibold text-slate-900">Etimologia</h3>
+              <div className="rounded-r-xl border-l-4 border-teal-300 bg-teal-50/70 p-4">
+                <p className="leading-normal text-slate-700">{result.summary.etymology}</p>
               </div>
             </CardContent>
           )}
 
-          <CardContent className="border-t border-stone-100">
-            <h3 className="text-sm font-semibold text-stone-900 mb-4">Definições</h3>
+          <CardContent className="border-t border-slate-100">
+            <h3 className="mb-4 text-sm font-semibold text-slate-900">Definições</h3>
             {result.summary.definitions.length > 0 ? (
-              <ol className="space-y-4">
+              <ol className="space-y-1">
                 {result.summary.definitions.map((def, index) => (
                   <li key={index} className="pl-1">
                     <div className="flex gap-3">
-                      <span className="text-sm font-medium text-stone-500 mt-0.5">{index + 1}.</span>
-                      <p className="text-stone-700 leading-relaxed flex-1">{def}</p>
+                      <span className="mt-0.5 text-sm font-medium text-slate-500">{index + 1}.</span>
+                      <p className="flex-1 leading-normal text-slate-700">{def}</p>
                     </div>
                   </li>
                 ))}
               </ol>
             ) : (
-              <p className="text-stone-500 text-sm">Nenhuma definição encontrada.</p>
+              <p className="text-sm text-slate-500">Nenhuma definição encontrada.</p>
             )}
           </CardContent>
 
           {result.summary.synonyms.length > 0 && (
-            <CardContent className="border-t border-stone-100">
-              <h3 className="text-sm font-semibold text-stone-900 mb-4">Sinônimos</h3>
-              <div className="flex flex-wrap gap-2">
+            <CardContent className="border-t border-slate-100">
+              <h3 className="mb-4 text-sm font-semibold text-slate-900">Sinônimos</h3>
+              <ol className="space-y-1">
                 {result.summary.synonyms.map((synonym, index) => (
-                  <Badge key={index} variant="subtle">
-                    {synonym}
-                  </Badge>
+                  <li key={index} className="pl-1">
+                    <div className="flex gap-3">
+                      <span className="mt-0.5 text-sm font-medium text-slate-500">{index + 1}.</span>
+                      <p className="flex-1 leading-normal text-slate-700">{synonym}</p>
+                    </div>
+                  </li>
                 ))}
-              </div>
+              </ol>
             </CardContent>
           )}
         </Card>
@@ -116,9 +119,9 @@ export function LexicalView({ data }: LexicalViewProps) {
       <div className="space-y-6">
         <Card>
           <CardHeader>
-            <h3 className="text-lg font-semibold text-stone-900">Pipeline</h3>
+            <h3 className="text-lg font-semibold text-slate-900">Pipeline</h3>
             {selectedSource && (
-              <p className="text-sm text-stone-600 mt-2">
+              <p className="mt-2 text-sm text-slate-600">
                 Filtrando: <span className="font-medium">{selectedSource}</span>
               </p>
             )}
@@ -127,21 +130,21 @@ export function LexicalView({ data }: LexicalViewProps) {
             {filteredPipeline.length > 0 ? (
               filteredPipeline.map((stage, index) => (
                 <details key={index} className="group">
-                  <summary className="cursor-pointer list-none">
-                    <div className="bg-stone-50 hover:bg-stone-100 transition-colors rounded-lg p-4">
+                  <summary className="list-none cursor-pointer">
+                    <div className="rounded-xl bg-slate-50/80 p-4 transition-colors hover:bg-slate-100/80">
                       <div className="flex items-start justify-between gap-3">
-                        <div className="flex-1 min-w-0">
-                          <div className="flex items-center gap-2 mb-1">
+                        <div className="min-w-0 flex-1">
+                          <div className="mb-1 flex items-center gap-2">
                             {stage.ok ? (
-                              <CheckCircle2 size={16} className="text-emerald-600 flex-shrink-0" />
+                              <CheckCircle2 size={16} className="flex-shrink-0 text-emerald-700" />
                             ) : (
-                              <XCircle size={16} className="text-red-600 flex-shrink-0" />
+                              <XCircle size={16} className="flex-shrink-0 text-rose-700" />
                             )}
-                            <span className="font-medium text-stone-900 text-sm truncate">
+                            <span className="truncate text-sm font-medium text-slate-900">
                               {stage.source}
                             </span>
                           </div>
-                          <p className="text-xs text-stone-600">
+                          <p className="text-xs text-slate-600">
                             {stage.data.definition_count} definições · {stage.elapsed_ms}ms
                           </p>
                         </div>
@@ -151,14 +154,14 @@ export function LexicalView({ data }: LexicalViewProps) {
                       </div>
                     </div>
                   </summary>
-                  <div className="mt-2 p-4 bg-white border border-stone-200 rounded-lg">
+                  <div className="mt-2 rounded-xl border border-slate-200 bg-white/90 p-4">
                     {stage.error && (
-                      <p className="text-sm text-red-600 mb-3">
+                      <p className="mb-3 text-sm text-rose-700">
                         <span className="font-medium">Erro:</span> {stage.error}
                       </p>
                     )}
                     {stage.data.definitions.length > 0 ? (
-                      <ol className="space-y-2 text-sm text-stone-700">
+                      <ol className="space-y-2 text-sm text-slate-700">
                         {stage.data.definitions.map((def, i) => (
                           <li key={i} className="pl-1">
                             {i + 1}. {def}
@@ -166,13 +169,13 @@ export function LexicalView({ data }: LexicalViewProps) {
                         ))}
                       </ol>
                     ) : (
-                      <p className="text-sm text-stone-500">Nenhuma definição encontrada.</p>
+                      <p className="text-sm text-slate-500">Nenhuma definição encontrada.</p>
                     )}
                   </div>
                 </details>
               ))
             ) : (
-              <p className="text-sm text-stone-500">Nenhuma etapa corresponde ao filtro.</p>
+              <p className="text-sm text-slate-500">Nenhuma etapa corresponde ao filtro.</p>
             )}
           </CardContent>
         </Card>

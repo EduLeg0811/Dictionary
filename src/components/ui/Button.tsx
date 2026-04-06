@@ -16,12 +16,12 @@ export function Button({
   disabled,
   ...props
 }: ButtonProps) {
-  const baseStyles = 'inline-flex items-center justify-center font-medium transition-all duration-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed';
+  const baseStyles = 'inline-flex items-center justify-center rounded-xl font-medium transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-slate-50 disabled:cursor-not-allowed disabled:opacity-50';
 
   const variantStyles = {
-    primary: 'bg-sky-900 text-white hover:bg-sky-800 focus:ring-sky-500',
-    secondary: 'bg-stone-100 text-stone-700 hover:bg-stone-200 focus:ring-stone-400',
-    ghost: 'text-stone-600 hover:bg-stone-50 focus:ring-stone-400',
+    primary: 'bg-slate-700 text-white hover:bg-slate-800 focus:ring-slate-400',
+    secondary: 'border border-slate-200 bg-slate-100/80 text-slate-700 hover:bg-slate-200/80 focus:ring-slate-300',
+    ghost: 'text-slate-600 hover:bg-slate-100/70 focus:ring-slate-300',
   };
 
   const sizeStyles = {
@@ -30,7 +30,7 @@ export function Button({
     lg: 'px-6 py-3 text-base',
   };
 
-  const activeStyles = isActive ? 'ring-2 ring-sky-500 ring-offset-2' : '';
+  const activeStyles = isActive ? 'border-blue-200 bg-blue-50/90 text-blue-900 ring-2 ring-blue-200 ring-offset-2' : '';
 
   return (
     <button

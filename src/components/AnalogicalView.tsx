@@ -40,11 +40,11 @@ export function AnalogicalView({ data }: AnalogicalViewProps) {
         <Card>
           <CardHeader>
             <div className="space-y-3">
-              <p className="text-xs font-semibold text-stone-500 uppercase tracking-wider">
+              <p className="text-xs font-semibold uppercase tracking-wider text-slate-500">
                 {entry.label}
               </p>
-              <div className="flex items-baseline justify-between gap-4 flex-wrap">
-                <h2 className="text-3xl font-semibold text-stone-900 tracking-tight">
+              <div className="flex flex-wrap items-baseline justify-between gap-4">
+                <h2 className="text-3xl font-semibold tracking-tight text-slate-900">
                   {entry.term}
                 </h2>
                 <Badge variant="info">Aulete</Badge>
@@ -68,12 +68,15 @@ export function AnalogicalView({ data }: AnalogicalViewProps) {
           </CardHeader>
 
           {entry.definitions.length > 0 && (
-            <CardContent className="border-t border-stone-100">
-              <h3 className="text-sm font-semibold text-stone-900 mb-4">Definições</h3>
-              <ol className="space-y-3">
-                {entry.definitions.map((def) => (
-                  <li key={def.index} value={def.index} className="pl-1 text-stone-700 leading-relaxed">
-                    {def.text}
+            <CardContent className="border-t border-slate-100">
+              <h3 className="mb-4 text-sm font-semibold text-slate-900">Definições</h3>
+              <ol className="space-y-1">
+                {entry.definitions.map((def, index) => (
+                  <li key={def.index} className="pl-1">
+                    <div className="flex gap-3">
+                      <span className="mt-0.5 text-sm font-medium text-slate-500">{index + 1}.</span>
+                      <p className="flex-1 leading-normal text-slate-700">{def.text}</p>
+                    </div>
                   </li>
                 ))}
               </ol>
@@ -81,10 +84,10 @@ export function AnalogicalView({ data }: AnalogicalViewProps) {
           )}
 
           {entry.etymology && (
-            <CardContent className="border-t border-stone-100">
-              <h3 className="text-sm font-semibold text-stone-900 mb-3">Etimologia</h3>
-              <div className="bg-sky-50 border-l-4 border-sky-400 rounded-r-lg p-4">
-                <p className="text-stone-700 leading-relaxed">{entry.etymology}</p>
+            <CardContent className="border-t border-slate-100">
+              <h3 className="mb-3 text-sm font-semibold text-slate-900">Etimologia</h3>
+              <div className="rounded-r-xl border-l-4 border-teal-300 bg-teal-50/70 p-4">
+                <p className="leading-normal text-slate-700">{entry.etymology}</p>
               </div>
             </CardContent>
           )}
@@ -95,11 +98,11 @@ export function AnalogicalView({ data }: AnalogicalViewProps) {
         <CardHeader>
           <div className="space-y-4">
             <div>
-              <p className="text-xs font-semibold text-stone-500 uppercase tracking-wider mb-2">
+              <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-slate-500">
                 Mapa Analógico
               </p>
-              <div className="flex items-baseline justify-between gap-4 flex-wrap">
-                <h2 className="text-2xl font-semibold text-stone-900 tracking-tight">
+              <div className="flex flex-wrap items-baseline justify-between gap-4">
+                <h2 className="text-2xl font-semibold tracking-tight text-slate-900">
                   {result.term}
                 </h2>
                 <div className="flex items-center gap-2">
@@ -112,7 +115,7 @@ export function AnalogicalView({ data }: AnalogicalViewProps) {
                   >
                     <Columns size={16} />
                   </Button>
-                  <span className="text-sm text-stone-600 min-w-[4rem] text-center">
+                  <span className="min-w-[4rem] text-center text-sm text-slate-600">
                     {columns} col.
                   </span>
                   <Button
@@ -143,23 +146,23 @@ export function AnalogicalView({ data }: AnalogicalViewProps) {
           </div>
         </CardHeader>
 
-        <CardContent className="border-t border-stone-100">
+        <CardContent className="border-t border-slate-100">
           {sortedSenses.length > 0 ? (
             <div className="space-y-4">
               {sortedSenses.map((sense, index) => (
                 <details key={index} className="group" open={index === 0}>
-                  <summary className="cursor-pointer list-none select-none">
-                    <div className="bg-stone-50 hover:bg-stone-100 transition-colors rounded-lg p-4">
+                  <summary className="list-none cursor-pointer select-none">
+                    <div className="rounded-xl bg-slate-50/80 p-4 transition-colors hover:bg-slate-100/80">
                       <div className="flex items-start justify-between gap-3">
                         <div className="flex-1">
-                          <h3 className="font-semibold text-stone-900 mb-1">{sense.title}</h3>
-                          <p className="text-sm text-stone-600">
+                          <h3 className="mb-1 font-semibold text-slate-900">{sense.title}</h3>
+                          <p className="text-sm text-slate-600">
                             {sense.term_count} termos · {sense.classes.length} categorias
                           </p>
                         </div>
                         <ChevronDown
                           size={20}
-                          className="text-stone-400 transition-transform duration-200 group-open:rotate-180 flex-shrink-0 mt-1"
+                          className="mt-1 flex-shrink-0 text-slate-400 transition-transform duration-200 group-open:rotate-180"
                         />
                       </div>
                     </div>
@@ -169,26 +172,29 @@ export function AnalogicalView({ data }: AnalogicalViewProps) {
                     {sense.classes.map((classGroup, classIndex) => (
                       <div
                         key={classIndex}
-                        className="bg-white border border-stone-200 rounded-lg p-5"
+                        className="rounded-2xl border border-slate-200 bg-white/85 p-5"
                       >
                         <div className="mb-4">
-                          <h4 className="font-medium text-stone-900 mb-1">{classGroup.label}</h4>
-                          <p className="text-sm text-stone-500">
+                          <h4 className="mb-1 font-medium text-slate-900">{classGroup.label}</h4>
+                          <p className="text-sm text-slate-500">
                             {classGroup.term_count} termos · {classGroup.group_count} grupos
                           </p>
                         </div>
-                        <ul
+                        <ol
                           className="grid gap-x-6 gap-y-2"
                           style={{
                             gridTemplateColumns: `repeat(${columns}, minmax(0, 1fr))`,
+                            gridAutoFlow: 'column',
+                            gridTemplateRows: `repeat(${Math.ceil(classGroup.terms.length / columns)}, minmax(0, auto))`,
                           }}
                         >
                           {classGroup.terms.map((term, termIndex) => (
-                            <li key={termIndex} className="text-stone-700 text-sm">
-                              {term}
+                            <li key={termIndex} className="flex gap-2 text-sm text-slate-700">
+                              <span className="tabular-nums text-slate-500">{termIndex + 1}.</span>
+                              <span>{term}</span>
                             </li>
                           ))}
-                        </ul>
+                        </ol>
                       </div>
                     ))}
                   </div>
@@ -196,8 +202,8 @@ export function AnalogicalView({ data }: AnalogicalViewProps) {
               ))}
             </div>
           ) : (
-            <div className="text-center py-12">
-              <p className="text-stone-500">Nenhuma relação analógica encontrada.</p>
+            <div className="py-12 text-center">
+              <p className="text-slate-500">Nenhuma relação analógica encontrada.</p>
             </div>
           )}
         </CardContent>

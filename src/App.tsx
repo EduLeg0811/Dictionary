@@ -45,13 +45,13 @@ function App() {
   };
 
   return (
-    <div className="min-h-screen bg-stone-50">
+    <div className="min-h-screen bg-slate-50/40">
       <div className="container py-8 md:py-12">
         <SearchBar onSearch={handleSearch} isLoading={isLoading} activeMode={activeMode} />
 
         {error && (
-          <div className="bg-red-50 border border-red-200 rounded-lg p-4 mb-6">
-            <p className="text-red-800">
+          <div className="mb-6 rounded-xl border border-rose-200 bg-rose-50/80 p-4">
+            <p className="text-rose-900">
               <span className="font-medium">Erro:</span> {error}
             </p>
           </div>
@@ -62,7 +62,7 @@ function App() {
 
         {!activeMode && !isLoading && (
           <div className="text-center py-16">
-            <p className="text-stone-500 text-lg">
+            <p className="text-slate-500 text-lg">
               Digite uma palavra e escolha o tipo de consulta para começar
             </p>
           </div>

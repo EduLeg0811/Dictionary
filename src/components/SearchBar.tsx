@@ -21,12 +21,12 @@ export function SearchBar({ onSearch, isLoading, activeMode }: SearchBarProps) {
   };
 
   return (
-    <div className="bg-white rounded-2xl shadow-md border border-stone-200 p-8 mb-8">
+    <div className="mb-8 rounded-3xl border border-slate-200/80 bg-white/90 p-8 shadow-sm backdrop-blur-sm">
       <div className="max-w-3xl mx-auto">
-        <h1 className="text-3xl font-semibold text-stone-900 mb-2 tracking-tight">
+        <h1 className="mb-2 text-3xl font-semibold tracking-tight text-slate-900">
           Consulta de Dicionários
         </h1>
-        <p className="text-stone-600 mb-8">
+        <p className="mb-8 text-slate-600">
           Pesquise definições, etimologias e termos relacionados
         </p>
 
